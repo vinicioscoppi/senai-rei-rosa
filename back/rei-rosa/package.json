@@ -1,10 +1,25 @@
 {
   "name": "rei-rosa",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "back-end web do projeto o Rei e a Rosa",
+  "main": "src/server.js",
+  "dependencies": {
+    "bluebird": "3.7.2",
+    "body-parser": "1.19.0",
+    "debug": "4.1.1",
+    "ejs": "3.0.1",
+    "express": "4.17.1",
+    "http": "0.0.0",
+    "redis": "3.0.2"
+  },
+  "devDependencies": {
+    "jest": "26.0.1",
+    "nodemon": "2.0.4",
+    "sinon": "9.0.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "start": "nodemon server.js"
   },
   "author": "",
   "license": "ISC"
