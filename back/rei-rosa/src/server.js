@@ -24,7 +24,7 @@ app.get('/room/:numberOfRooms', (req, res) => {
     if (isNaN(numberOfRooms))
         res.status(400).send(`${numberOfRooms} não é um número.`);
     else if (numberOfRooms > NUMBER_OF_ROOMS_IN_MEMORY || numberOfRooms < 1)
-        res.status(400).send(`Parâmetro deve ser um número de 0 a ${NUMBER_OF_ROOMS_IN_MEMORY} (era ${numberOfRooms}).`);
+        res.status(400).send(`Parâmetro deve ser um número de 1 a ${NUMBER_OF_ROOMS_IN_MEMORY} (era ${numberOfRooms}).`);
     else {
         new Room().getRoomsFromOneTo(numberOfRooms, config.dbClient)
             .then(rooms => res.send(rooms[0].map(room => JSON.parse(room))));
