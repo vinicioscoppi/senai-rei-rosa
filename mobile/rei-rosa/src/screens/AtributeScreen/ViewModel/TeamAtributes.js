@@ -1,0 +1,8 @@
+/*
+
+    updateStrenghtPoints()
+    updateCouragePoints()
+    updateFriendshipPoints()
+    updateWisdomPoints()
+
+*/

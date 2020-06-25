@@ -1,0 +1,9 @@
+/*
+
+    voteAgree()
+    voteDisagree()
+    
+    warnPlayerDisagreed()
+    warnRoomAgreed()
+
+*/
