@@ -33,7 +33,7 @@ app.get('/room/:numberOfRooms', (req, res) => {
     }
 });
 
-app.get('/user/:nameUser/:idRoom', (req, res) => {
+app.get('/addUser/:nameUser/:idRoom', (req, res) => {
 
     if (isNaN(req.params.idRoom))
         res.status(400).send(`Id da sala não é um numero`);
