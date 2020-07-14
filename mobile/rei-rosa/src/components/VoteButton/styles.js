@@ -14,9 +14,9 @@ export const styles = StyleSheet.create({
         flexBasis: 145,
         margin: 5,
         borderWidth: 3,
-    }, 
+    },
     separator: {
         margin: 5,
     },
-    
+
 });

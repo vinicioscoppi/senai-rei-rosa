@@ -1,7 +1,14 @@
 {
-  "name": "senai_rei_rosa",
+  "name": "rei-rosa",
   "version": "0.0.1",
   "private": true,
+  "dependencies": {
+    "jest-fetch-mock": "3.0.3",
+    "jest-react-native": "18.0.0",
+    "react": "16.11.0",
+    "react-native": "0.62.2",
+    "react-native-testing-library": "1.14.0"
+  },
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -9,15 +16,9 @@
     "test": "jest",
     "lint": "eslint ."
   },
-  "dependencies": {
-    "react": "16.11.0",
-    "react-native": "0.62.2",
-    "react-native-button-group": "^1.0.0",
-    "react-native-vector-icons": "^6.6.0"
-  },
   "devDependencies": {
-    "@babel/core": "7.10.3",
-    "@babel/runtime": "7.10.3",
+    "@babel/core": "7.9.6",
+    "@babel/runtime": "7.9.6",
     "@react-native-community/eslint-config": "0.0.5",
     "babel-jest": "24.9.0",
     "eslint": "6.8.0",
@@ -26,6 +27,7 @@
     "react-test-renderer": "16.11.0"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "automock": false
   }
 }
