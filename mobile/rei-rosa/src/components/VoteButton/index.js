@@ -13,25 +13,25 @@ export class VoteButtons extends Component {
             <View style={styles.container}>
                 <TouchableHighlight
                     style={styles.item}
-                    underlayColor={color.STRENGTH_ENABLED}
+                    underlayColor={color.DISAGREE}
                     activeOpacity={0.6}
                     onPress={() => alert('Nope!')}>
                     <Icon
                         name='close'
                         size={50}
-                        color={color.STRENGTH_ENABLED}
+                        color={color.DISAGREE}
                     />
                 </TouchableHighlight>
                 <Separator />
                 <TouchableHighlight
                     style={styles.item}
-                    underlayColor={color.BRAVERY_ENABLED}
+                    underlayColor={color.AGREE}
                     activeOpacity={0.6}
                     onPress={() => alert('Ok!')}>
                     <Icon
                         name='check'
                         size={50}
-                        color={color.BRAVERY_ENABLED}
+                        color={color.AGREE}
                     />
                 </TouchableHighlight>
             </View>
