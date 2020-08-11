@@ -7,6 +7,7 @@ import {
 import {color} from './../../enums/color';
 import { styles } from './styles';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { icons } from './../../enums/icons'
 
 class AtributeCell extends Component{
     constructor(props){
@@ -128,7 +129,7 @@ export class IndividualAtributes extends Component
                 <AtributeBar key={2} atribute="CORAGEM" colorEnabled={color.BRAVERY_ENABLED} colorDisabled={color.BRAVERY_DISABLED} score={6}></AtributeBar>
                 <AtributeBar key={3} atribute="AMIZADE" colorEnabled={color.FRIENDSHIP_ENABLED} colorDisabled={color.FRIENDSHIP_DISABLED} score={6}></AtributeBar>
                 <AtributeBar key={4} atribute="SABEDORIA" colorEnabled={color.WISDOW_ENABLED} colorDisabled={color.WISDOM_DISABLED} score={6}></AtributeBar>
-                <Icon name={icones.forca} size={this.props.size}></Icon>
+                <Icon name={icons.forca} size={this.props.size}></Icon>
             </View>
         );
     }

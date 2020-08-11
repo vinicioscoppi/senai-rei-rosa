@@ -85,4 +85,7 @@ export class TeamAtributeBar extends Component
           }
         }, 1000/time_smoothness)
       }
+    componentWillUnmount(){
+        clearInterval(this.myInterval);
+    }
 }
