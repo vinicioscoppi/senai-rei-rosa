@@ -5,4 +5,8 @@ export const styles = StyleSheet.create({
       flex:1,
       flexDirection:'column',
     },
+    image: {
+      width:"100%",
+      height:"100%",
+    }
 });
