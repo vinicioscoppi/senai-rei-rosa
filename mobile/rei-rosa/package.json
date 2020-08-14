@@ -8,7 +8,8 @@
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-testing-library": "1.14.0",
-    "react-native-vector-icons": "^7.0.0"
+    "react-native-vector-icons": "^7.0.0",
+    "react-native-webview": "^10.4.1"
   },
   "scripts": {
     "android": "react-native run-android",
