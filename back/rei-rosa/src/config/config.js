@@ -8,7 +8,7 @@ const stickerGeoForms = require('../models/enums/room-sticker-geo-form');
 
 module.exports = class Config {
     constructor(dbClient) {
-        this.PORT = 3000;
+        this.PORT = 3001;
         this.express = express;
         this.bodyParser = bodyParser;
         this.dbClient = dbClient;
