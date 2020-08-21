@@ -6,7 +6,7 @@ const Room = require('./models/room');
 const config = new Config(redis.createClient());
 const app = config.express();
 
-const NUMBER_OF_ROOMS_IN_MEMORY = 10;
+const MAX_NUMBER_OF_ROOMS_IN_MEMORY = 10;
 const NUMBER_OF_MAX_USER_IN_ROOM = 4;
 const NUMBER_OF_MIN_USER_IN_ROOM = 2;
 
@@ -15,24 +15,29 @@ app.listen(config.PORT, () => {
 });
 
 config.dbClient.on('connect', () => {
-    console.log('> Connected to Redis database.');
-    config.dbClient.flushallAsync().then(() => config._setupRooms());
+    console.log('> Connected to Redis/Memurai database.');
+    config.dbClient.flushallAsync()
+        .then(() => config._setupRooms())
+        .then(roomsInMemory => config.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', roomsInMemory))
+        .then(() => config.dbClient.setAsync('SYNC', false));
 });
 
 app.use(config.bodyParser.json());
 
+//get N rooms
 app.get('/room/:numberOfRooms', (req, res) => {
     let numberOfRooms = req.params.numberOfRooms;
     if (isNaN(numberOfRooms))
         res.status(400).send(`${numberOfRooms} não é um número.`);
-    else if (numberOfRooms > NUMBER_OF_ROOMS_IN_MEMORY || numberOfRooms < 1)
-        res.status(400).send(`Parâmetro deve ser um número de 1 a ${NUMBER_OF_ROOMS_IN_MEMORY} (era ${numberOfRooms}).`);
+    else if (numberOfRooms > MAX_NUMBER_OF_ROOMS_IN_MEMORY || numberOfRooms < 1)
+        res.status(400).send(`Parâmetro deve ser um número de 1 a ${MAX_NUMBER_OF_ROOMS_IN_MEMORY} (era ${numberOfRooms}).`);
     else {
         new Room().getRoomsFromOneTo(numberOfRooms, config.dbClient)
             .then(rooms => res.send(rooms[0].map(room => JSON.parse(room))));
     }
 });
 
+//post a user into a room
 app.get('/addUser/:nameUser/:idRoom', (req, res) => {
 
     if (isNaN(req.params.idRoom))
@@ -57,4 +62,26 @@ app.get('/addUser/:nameUser/:idRoom', (req, res) => {
             }
         }
     ).catch(error => console.error(error));
+});
+
+//synchronize the current number of rooms
+app.post('/sync', (req, res) => {
+    let currentNumberOfRooms = 0;
+    const multi = config.dbClient.multi();
+    config.dbClient.getAsync('CURRENT_NUMBER_OF_ROOMS')
+        .then(currentNumber => {
+            currentNumberOfRooms = currentNumber;
+            multi.keys('room-*');
+            return multi.execAsync();
+        })
+        .then(keys => {
+            keys[0].filter(key => parseInt(key.substring(0, 5)) > currentNumberOfRooms);
+            return keys;
+        })
+        .then(roomsToDelete => {
+            roomsToDelete.forEach(room => multi.del(room));
+            return multi.execAsync();
+        })
+        .then(() => config.dbClient.setAsync('SYNC', true))
+        .then(() => res.send({ synchronized: true }));
 });
