@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const Room = require('../models/room');
 const Sticker = require('../models/sticker');
@@ -12,6 +13,7 @@ module.exports = class Config {
         this.express = express;
         this.bodyParser = bodyParser;
         this.dbClient = dbClient;
+        this.cors = cors;
     }
 
     _setupRooms() {

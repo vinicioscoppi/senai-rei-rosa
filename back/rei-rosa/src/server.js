@@ -10,6 +10,9 @@ const MAX_NUMBER_OF_ROOMS_IN_MEMORY = 10;
 const NUMBER_OF_MAX_USER_IN_ROOM = 4;
 const NUMBER_OF_MIN_USER_IN_ROOM = 2;
 
+//allow CORS
+app.use(config.cors);
+
 app.listen(config.PORT, () => {
     console.log(`> Server running on port ${config.PORT}.`);
 });
