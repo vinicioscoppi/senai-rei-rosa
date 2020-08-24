@@ -8,8 +8,8 @@ export default class Room extends React.Component {
     renderRoom(i) {
         return (
             <Button
-                onClick={() => this.props.onClick(i)}
-                id={`room${i}`}
+                click = { this.getNumerOfRooms }
+                id={i}
             />
         );
     }
@@ -29,5 +29,10 @@ export default class Room extends React.Component {
                 {this.renderRoom(9)}
             </Container>
         );
+    }
+    
+    async getNumerOfRooms(i) {
+        const response = await fetch(`http://localhost:3001/room/${i}`);
+        console.log(await response.json());
     }
 }

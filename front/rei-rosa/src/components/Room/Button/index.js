@@ -3,12 +3,13 @@ import React from 'react';
 import { Container } from './styles';
 import AddCircle from '@material-ui/icons/AddCircle';
 
-function Button() {
-    return (
-        <Container>
-            <AddCircle style={{ fontSize: 50 }}></AddCircle>
-        </Container>
-    );
-}
+export default class Button extends React.Component {
 
-export default Button;
+    render(){
+        return (
+            <Container onClick = { () => this.props.click( this.props.id + 1 ) }>
+                <AddCircle style={{ fontSize: 50 }}></AddCircle>
+            </Container>
+        );
+    }
+}
