@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
 export const Container = styled.button`
-  border:solid 2px #e2e6ed;
+  border:solid 4px #e2e6ed;
   height:120px;
-  width:170px;
-  margin: 15px 20px;
+  width:15%;
+  margin: 1% 2%;
   align-items: center;
   color:#ecf1f8;
   background:#ecf1f8;
