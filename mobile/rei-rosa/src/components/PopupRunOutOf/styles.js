@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
     },
     iconView:{
         flex:0.3,
-        backgroundColor:'#ff0000',
+        backgroundColor:'#ff0100',
     },
     messageView:{
         flex:0.1,
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
         fontSize:20
     },
     button:{
-        
+        textAlign: "center",
     }
     
 
