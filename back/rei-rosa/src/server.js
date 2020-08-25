@@ -36,32 +36,36 @@ app.get('/room/:numberOfRooms', (req, res) => {
         res.status(400).send(`Parâmetro deve ser um número de 1 a ${MAX_NUMBER_OF_ROOMS_IN_MEMORY} (era ${numberOfRooms}).`);
     else {
         new Room().getRoomsFromOneTo(numberOfRooms, config.dbClient)
-            .then(rooms => res.send(rooms[0].map(room => JSON.parse(room))));
+            .then(rooms => {
+                res.send(rooms[0].map(room => JSON.parse(room)));
+                return rooms[0].length;
+            })
+            .then(numberOfRoomsInMemory => config.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', numberOfRoomsInMemory));
     }
 });
 
 //post a user into a room
-app.get('/addUser/:nameUser/:idRoom', (req, res) => {
+// { user: 'userId', roomIndex: number }
+app.post('/user', (req, res) => {
 
-    if (isNaN(req.params.idRoom))
+    if (isNaN(req.body.roomIndex))
         res.status(400).send(`Id da sala não é um numero`);
 
-    if (req.params.idRoom > 10)
+    if (req.body.roomIndex > 10)
         res.status(400).send(`Id da sala não existe`);
 
-    const user = req.params.nameUser;
-    const idRoom = "room-" + req.params.idRoom;
+    const user = req.body.user;
+    const idRoom = `room-${req.body.roomIndex}`;
+    const roomRepo = new Room();
 
-    new Room().getRoom(config.dbClient, idRoom).then(
+    roomRepo.getRoom(config.dbClient, idRoom).then(
         room => {
-            var obj = JSON.parse(room);
-
+            let obj = JSON.parse(room);
             if (obj._players.length >= NUMBER_OF_MAX_USER_IN_ROOM)
                 res.status(400).send(`Numero de usuários deve ser entre ${NUMBER_OF_MIN_USER_IN_ROOM} e ${NUMBER_OF_MAX_USER_IN_ROOM}.`);
             else {
                 obj._players.push(user);
-
-                new Room().addToRoom(idRoom, config.dbClient, obj).then(ret => res.send("Done!"));
+                roomRepo.addToRoom(idRoom, config.dbClient, obj).then(() => res.send({ 'users':obj._players, idRoom }));
             }
         }
     ).catch(error => console.error(error));
@@ -69,22 +73,26 @@ app.get('/addUser/:nameUser/:idRoom', (req, res) => {
 
 //synchronize the current number of rooms
 app.post('/sync', (req, res) => {
-    let currentNumberOfRooms = 0;
-    const multi = config.dbClient.multi();
-    config.dbClient.getAsync('CURRENT_NUMBER_OF_ROOMS')
-        .then(currentNumber => {
-            currentNumberOfRooms = currentNumber;
-            multi.keys('room-*');
-            return multi.execAsync();
-        })
-        .then(keys => {
-            keys[0].filter(key => parseInt(key.substring(0, 5)) > currentNumberOfRooms);
-            return keys;
-        })
-        .then(roomsToDelete => {
-            roomsToDelete.forEach(room => multi.del(room));
-            return multi.execAsync();
-        })
-        .then(() => config.dbClient.setAsync('SYNC', true))
-        .then(() => res.send({ synchronized: true }));
+    config.dbClient.getAsync('SYNC').then(sync => {
+        if (sync === 'true') {
+            res.send({ synchronized: true });
+        } else {
+            let currentNumberOfRooms = 0;
+            const multi = config.dbClient.multi();
+            config.dbClient.getAsync('CURRENT_NUMBER_OF_ROOMS')
+            .then(currentNumber => {
+                currentNumberOfRooms = currentNumber;
+                multi.keys('room-*');
+                return multi.execAsync();
+            })
+            .then(keys => keys[0].filter(key => parseInt(key.substring(5)) > currentNumberOfRooms))
+            .then(roomsToDelete => {
+                roomsToDelete.forEach(room => multi.del(room));
+                return multi.execAsync();
+            })
+            .then(() => config.dbClient.setAsync('SYNC', true))
+            .then(() => res.send({ synchronized: true }));
+        }
+    });
 });
+    
