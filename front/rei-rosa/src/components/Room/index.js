@@ -2,37 +2,48 @@ import React from 'react';
 
 import { Container } from './styles';
 import Button from './Button';
+import arrayFromTo from '../../utils/array-from-to';
 
 export default class Room extends React.Component {
-    
-    renderRoom(i) {
-        return (
-            <Button
-                click = { this.getNumerOfRooms }
-                id={i}
-            />
-        );
-    }
+
+    state = { sync: false, hoveredRoom: 0, rooms: [] };
 
     render() {
         return (
             <Container>
-                {this.renderRoom(0)}
-                {this.renderRoom(1)}
-                {this.renderRoom(2)}
-                {this.renderRoom(3)}
-                {this.renderRoom(4)}
-                {this.renderRoom(5)}
-                {this.renderRoom(6)}
-                {this.renderRoom(7)}
-                {this.renderRoom(8)}
-                {this.renderRoom(9)}
+                {this.renderRooms()}
             </Container>
         );
     }
-    
-    async getNumerOfRooms(i) {
+
+    renderRooms() {
+        return arrayFromTo(0, 9).map(i => this.renderRoom(i, this.state.hoveredRoom >= i));
+    }
+
+    renderRoom(i, hovered) {
+        return (
+            <Button
+                click={this.getNumerOfRooms}
+                id={i}
+                hovered={hovered}
+                sync={this.state.sync}
+                icon={this.state.rooms[i]?.icon || 'ADD'}
+                mouseOver={this.handleMouseOver}
+                mouseLeave={this.handleMouseLeave}
+            />
+        );
+    }
+
+    handleMouseOver = (i) =>  {
+        this.setState({ sync: false, hoveredRoom: i, rooms: [] });
+    }
+
+    handleMouseLeave = () =>  {
+        this.setState({ sync: false, hoveredRoom: -1, rooms: [] });
+    }
+
+    getNumberOfRooms = async (i) =>  {
         const response = await fetch(`http://localhost:3001/room/${i}`);
-        console.log(await response.json());
+        this.setState({ sync: false,  hoveredRoom: 0, rooms: await response.json() });
     }
 }
