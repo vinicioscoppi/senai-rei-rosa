@@ -91,7 +91,7 @@ app.get('/sync/rooms', (req, res) => {
             return multi.execAsync();
         })
         .then(rooms => {
-            res.send({ synchronized: true, rooms: JSON.parse(rooms[0]) });
+            res.send({ synchronized: true, rooms: rooms.map(room => JSON.parse(room)) });
         })
         .catch(error => {
             console.error(error);
