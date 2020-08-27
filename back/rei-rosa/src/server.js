@@ -71,6 +71,34 @@ app.post('/user', (req, res) => {
     ).catch(error => console.error(error));
 });
 
+//get all rooms with sync status
+app.get('/sync/rooms', (req, res) => {
+    const multi = config.dbClient.multi();
+    config.dbClient.getAsync('SYNC')
+        .then(sync => {
+            if (sync === 'false') {
+                res.send({ synchronized: false });
+            } else if (sync === 'true') {
+                multi.keys('room-*');
+                return multi.execAsync();
+            } else {
+                console.error('Impossible to get the value of SYNC');
+                throw new Error('Impossible to get the value of SYNC');
+            }
+        })
+        .then(keys => {
+            keys[0].forEach(key => multi.get(key));
+            return multi.execAsync();
+        })
+        .then(rooms => {
+            res.send({ synchronized: true, rooms: rooms.map(room => JSON.parse(room)) });
+        })
+        .catch(error => {
+            console.error(error);
+            res.sendStatus(500);
+        });
+});
+
 //synchronize the current number of rooms
 app.post('/sync', (req, res) => {
     config.dbClient.getAsync('SYNC').then(sync => {

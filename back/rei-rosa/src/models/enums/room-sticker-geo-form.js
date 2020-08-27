@@ -1,1 +1,1 @@
-module.exports = ["TRIANGLE", "SQUARE"];
+module.exports = ["CIRCLE", "SQUARE"];
