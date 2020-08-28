@@ -6,7 +6,7 @@ import arrayFromTo from '../../utils/array-from-to';
 
 export default class Room extends React.Component {
 
-    state = { sync: false, hoveredRoom: 0, rooms: [] };
+    state = { sync: false, hoveredRoom: 0 };
 
     render() {
         return (
@@ -23,27 +23,26 @@ export default class Room extends React.Component {
     renderRoom(i, hovered) {
         return (
             <Button
-                click={this.getNumerOfRooms}
+                click={this.getNumberOfRooms}
                 id={i}
                 hovered={hovered}
                 sync={this.state.sync}
-                icon={this.state.rooms[i]?.icon || 'ADD'}
-                mouseOver={this.handleMouseOver}
+                mouseEnter={this.handleMouseEnter}
                 mouseLeave={this.handleMouseLeave}
             />
         );
     }
 
-    handleMouseOver = (i) =>  {
-        this.setState({ sync: false, hoveredRoom: i, rooms: [] });
+    handleMouseEnter = (i) => {
+        this.setState({ sync: false, hoveredRoom: i });
     }
 
-    handleMouseLeave = () =>  {
-        this.setState({ sync: false, hoveredRoom: -1, rooms: [] });
+    handleMouseLeave = () => {
+        this.setState({ sync: false, hoveredRoom: -1 });
     }
 
-    getNumberOfRooms = async (i) =>  {
+    getNumberOfRooms = async (i) => {
         const response = await fetch(`http://localhost:3001/room/${i}`);
-        this.setState({ sync: false,  hoveredRoom: 0, rooms: await response.json() });
+        console.log(await response.json());
     }
 }
