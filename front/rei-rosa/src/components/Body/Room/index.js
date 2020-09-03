@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Container } from './styles';
 import Button from './Button';
-import arrayFromTo from '../../utils/array-from-to';
+import arrayFromTo from '../../../utils/array-from-to';
 
 export default class Room extends React.Component {
 

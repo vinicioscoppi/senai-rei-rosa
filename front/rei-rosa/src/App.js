@@ -2,17 +2,13 @@ import React from 'react';
 
 import GlobalStyle from './styles/global';
 import Header from './components/Header';
-import Sync from './components/Sync';
-import Room from './components/Room';
-import Start from './components/Start';
+import Body from './components/Body';
 
 function App() {
   return (
     <>
       <Header></Header>
-      <Sync></Sync>
-      <Room></Room>
-      <Start></Start>
+      <Body></Body>
       <GlobalStyle></GlobalStyle>
     </>
   );
