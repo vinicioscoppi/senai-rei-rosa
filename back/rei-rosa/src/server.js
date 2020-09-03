@@ -11,7 +11,7 @@ const NUMBER_OF_MAX_USER_IN_ROOM = 4;
 const NUMBER_OF_MIN_USER_IN_ROOM = 2;
 
 //allow CORS (enable when testing requests from the front-end)
-// app.use(config.cors);
+// app.use(config.cors());
 
 app.listen(config.PORT, () => {
     console.log(`> Server running on port ${config.PORT}.`);
