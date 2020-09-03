@@ -10,10 +10,20 @@ export default class Button extends React.Component {
             <Container onClick={() => this.props.click(this.props.id + 1)}
                 onMouseEnter={() => this.props.mouseEnter(this.props.id)}
                 onMouseLeave={() => this.props.mouseLeave(this.props.id)}
-                style={this.props.hovered ? this.getHoveredStyle() : this.getNotHoveredStyle()}>
+                style={this.getStyle()}>
                 <AddCircle style={{ fontSize: 50 }}></AddCircle>
             </Container>
         );
+    }
+
+    getStyle = () => {
+        if (this.props.highlight)
+            if (this.props.clicked)
+                return this.getClickedStyle();
+            else
+                return this.getHoveredStyle();
+        else
+            return this.getNotHoveredStyle();
     }
 
     getHoveredStyle = () => {
@@ -31,5 +41,13 @@ export default class Button extends React.Component {
             background: '#ecf1f8',
             transition: 'background 0.3s'
         };
+    }
+
+    getClickedStyle = () => {
+        return {
+            border: 'solid 4px #c3ccff',
+            background: '#ecf1f8',
+            transition: 'background 0.3s'
+        }
     }
 }
