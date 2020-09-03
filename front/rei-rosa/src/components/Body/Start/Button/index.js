@@ -2,8 +2,13 @@ import React from 'react';
 
 import { Container } from './styles';
 
-function Button() {
-  return <Container><h2>Iniciar Jogo!</h2></Container>;
-}
+export default class Button extends React.Component {
 
-export default Button;
+  render() {
+    return (
+      <Container>
+        <h2>{this.props.sync ? 'Iniciar Jogo!' : 'Sincronizar!'}</h2>
+      </Container>
+    );
+  }
+}

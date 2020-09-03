@@ -6,13 +6,19 @@ import Start from './Start';
 
 export default class Body extends React.Component {
 
+    state = { sync: false }
+
     render() {
         return (
             <>
-                <Sync sync={false}></Sync>
-                <Room></Room>
-                <Start></Start>
+                <Sync sync={this.state.sync}></Sync>
+                <Room onSynchronize={this.handleSynchronization}></Room>
+                <Start sync={this.state.sync}></Start>
             </>
         );
+    }
+
+    handleSynchronization = () => {
+        this.setState({ sync : true });
     }
 }
