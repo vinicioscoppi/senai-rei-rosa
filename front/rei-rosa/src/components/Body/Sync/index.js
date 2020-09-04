@@ -9,7 +9,7 @@ export default class Sync extends React.Component {
     render() {
         return (
             <Container>
-                <Title></Title>
+                <Title sync={this.props.sync}></Title>
                 <Button enabled={this.props.sync}></Button>
             </Container >
         );

@@ -2,16 +2,18 @@ import React from 'react';
 
 import { Container } from './styles';
 import AddCircle from '@material-ui/icons/AddCircle';
+// import Square from '@material-ui/icons/CropSquareOutlined';
+// import Circle from '@material-ui/icons/RadioButtonUncheckedOutlined';
 
 export default class Button extends React.Component {
 
     render() {
         return (
-            <Container onClick={() => this.props.click(this.props.id + 1)}
+            <Container onClick={() => this.props.click(this.props.id)}
                 onMouseEnter={() => this.props.mouseEnter(this.props.id)}
                 onMouseLeave={() => this.props.mouseLeave(this.props.id)}
                 style={this.getStyle()}>
-                <AddCircle style={{ fontSize: 50 }}></AddCircle>
+                {this.getIcon()}
             </Container>
         );
     }
@@ -47,7 +49,41 @@ export default class Button extends React.Component {
         return {
             border: 'solid 4px #c3ccff',
             background: '#ecf1f8',
-            transition: 'background 0.3s'
+            transition: 'background 0.3s',
+            color: '#c3ccff',
+            fontSize: '50px'
         }
     }
+
+    getIcon = () => {
+        return this.props.clicked ? this.props.id + 1 : <AddCircle style={{ fontSize: 50 }}></AddCircle>;
+    }
+
+    // getIcon = () => {
+    //     switch (this.props.icon) {
+    //         case 'CIRCLE':
+    //             return  <Circle style={{ fontSize: 70, color: this.getIconColor() }}></Circle>;
+    //         case 'SQUARE':
+    //             return <Square style={{ fontSize: 70, color: this.getIconColor() }}></Square>;
+    //         default:
+    //             return <AddCircle style={{ fontSize: 50 }}></AddCircle>;
+    //     }
+    // }
+
+    // getIconColor() {
+    //     switch (this.props.color) {
+    //         case 'BLUE':
+    //             return '#536dfe';
+    //         case 'RED':
+    //             return '#ff4081';
+    //         case 'YELLOW':
+    //             return '#ffd740';
+    //         case 'PINK':
+    //             return '#ea80fc';
+    //         case 'GREEN':
+    //             return '#b2ff59';
+    //         default:
+    //             return '#ecf1f8';
+    //     }
+    // }
 }
