@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
-import AtributeScreen from './screens/AtributeScreen/View/index'
+import {
+View, 
+Text }
+from 'react-native';
+import Roulette from './screens/Roulette/View/index'
 export default class App extends Component {
-  render() {
+  constructor() {
+    super();
+  }
+  render() { 
     return (
-      <AtributeScreen></AtributeScreen>
+      <Roulette items={[1,2,3,4,5,6]} onSpinEnd={(msg) => {}}></Roulette>
     );
   }
 }
