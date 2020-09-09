@@ -10,7 +10,7 @@ export default class App extends Component {
   }
   render() { 
     return (
-      <Roulette items={[1,2,3,4,5,6]} onSpinEnd={(msg) => alert("Numero tirado: " + msg)}></Roulette>
+      <Roulette items={[1,2,3,4,5,6]} onSpinEnd={(msg) => {}}></Roulette>
     );
   }
 }

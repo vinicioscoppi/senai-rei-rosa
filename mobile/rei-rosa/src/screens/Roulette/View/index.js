@@ -8,8 +8,9 @@ export default class Roulette extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      titleMsg:"Gire a roleta",
       random:0,
-      angle:0,
+      angle:null,
       selectedItem:null,
       showSelectedItem:false,
       allowUserClick:true,
@@ -18,7 +19,7 @@ export default class Roulette extends Component {
     this.spin = this.spin.bind(this);
   }
 
-  getItemPosition = function(itemIndex) {
+  getItemPosition = (itemIndex) => {
     const nbItem = this.props.items.length;
     const itemAngle = itemIndex*360/nbItem;
     const radius = wheelSize/2;
@@ -31,7 +32,8 @@ export default class Roulette extends Component {
         //Rotate by itemAngle
         {rotate:itemAngle+'deg'},
         //Adjust numbers near outer circumference 
-        {translateY:-radius+20}]}}
+        {translateY:-radius+20}]}
+  }
 
   spin = () => {
     if(this.state.allowUserClick){
@@ -47,6 +49,7 @@ export default class Roulette extends Component {
         outputRange: ['0deg',animationAngle+'deg']})  
 
       this.setState({ 
+        titleMsg:"Girando...",
         random:random,
         selectedItem: selectedItem,
         showSelectedItem:false,
@@ -63,6 +66,7 @@ export default class Roulette extends Component {
         duration: spinDuration
       }).start(({ finished }) => {
         this.setState({
+          titleMsg:"Ande " + this.state.selectedItem + (this.state.selectedItem==1? " casa" : " casas"),
           showSelectedItem:true,
           allowUserClick:true})
           this.props.onSpinEnd(this.state.selectedItem);
@@ -70,7 +74,7 @@ export default class Roulette extends Component {
     } 
   }
 
-  createSlices() {
+  createSlices = () => {
     let slices = [];
 
     const colorArr = ['yellow', 'red', 'blue','yellow', 'red', 'blue']; //color the slice
@@ -107,34 +111,44 @@ export default class Roulette extends Component {
     const { items } = this.props;
     
     return (
-      <View style={styles.wheelContainer}>
-        <TriangleDown></TriangleDown>
-        <TouchableWithoutFeedback onPress={this.spin}>
-          
-          <Animated.View style={[styles.wheel,this.animationCSS]}>
+      <View style={styles.screen}>
+        <View style={styles.header}>
+    <Text style={styles.title}>{this.state.titleMsg}</Text>
+        </View>
+        <View style={styles.main}>
+          <View style={styles.wheelContainer}>
+            <TriangleDown></TriangleDown>
+            <TouchableWithoutFeedback onPress={this.spin}>
+              
+              <Animated.View style={[styles.wheel,this.animationCSS]}>
+                
+                <Svg
+                height={wheelSize}
+                width={wheelSize}
+                viewBox="-1 -1 2 2"
+                style={{ transform: [{ rotate: 30 + initialAngle +"deg" }] }}
+                >
+                  {this.createSlices()}
+                  {items.map((item, index) => (
+                  <View style={[styles.wheelItem,this.getItemPosition(index)]} key={index}>
+                    <Text style={styles.wheelItemText}>{item}</Text>
+                  </View>
+                ))}
+                
+                </Svg>
+                
+                <Circle></Circle>
+                
+              </Animated.View>
+
+            </TouchableWithoutFeedback>
+            <Text style={styles.wheelMsg}>{this.state.showSelectedItem == true ? this.state.selectedItem : ""}</Text>
             
-            <Svg
-            height="400"
-            width="400"
-            viewBox="-1 -1 2 2"
-            style={{ transform: [{ rotate: 30 + initialAngle +"deg" }] }}
-            >
-              {this.createSlices()}
-              {items.map((item, index) => (
-              <View style={[styles.wheelItem,this.getItemPosition(index)]} key={index}>
-                <Text style={styles.wheelItemText}>{item}</Text>
-              </View>
-            ))}
-            
-            </Svg>
-            
-            <Circle></Circle>
-            
-          </Animated.View>
-        </TouchableWithoutFeedback>
-        <Text style={styles.wheelMsg}>{this.state.showSelectedItem == true ? this.state.selectedItem : ""}</Text>
-        
-      </View>
+          </View>
+        </View>
+        <View style={styles.footer}>          
+        </View>
+      </View>  
 
     );
   }
