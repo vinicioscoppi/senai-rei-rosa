@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
-import {
-  View,
-  Text,
-} from 'react-native';
-import RoomList from './View/RoomList';
-import styles from './styles';
+import { View } from 'react-native';
+import { TextView } from './../../../components/TextView/index'
+import RoomList from './RoomList/index';
+
 export default class ChooseRoom extends Component
 {
     constructor(props){
@@ -14,9 +12,7 @@ export default class ChooseRoom extends Component
     {
         return(
             <View>
-                <Text>
-                    Escolha a sala
-                </Text>
+                <TextView text='Escolha sua sala:'></TextView>
                 <RoomList numberOfRooms={3}></RoomList>
             </View>
         );
