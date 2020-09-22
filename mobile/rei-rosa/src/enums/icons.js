@@ -4,5 +4,6 @@ export const icons = {
     FRIENDSHIP: 'group',
     WISDOW: 'lightbulb-o',
     WATER: 'tint',
-    FOOD: 'apple'
+    FOOD: 'apple',
+    NO_WATER: 'tint-slash'
 }
