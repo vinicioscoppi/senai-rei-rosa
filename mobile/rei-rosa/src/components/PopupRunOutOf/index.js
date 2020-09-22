@@ -10,7 +10,7 @@ export class PopupRunOutOf extends Component {
   }
   render() {
     return (
-      <View style={styles.centeredView}>
+      <View>
         <Modal visible={this.props.timeIsUp} animationType={'fade'}>
           <View style={styles.viewModal}>
             <View style={styles.messageView}>
