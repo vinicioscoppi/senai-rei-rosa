@@ -22,7 +22,7 @@ config.dbClient.on('connect', () => {
     config.dbClient.flushallAsync()
         .then(() => config._setupRooms())
         .then(roomsInMemory => config.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', roomsInMemory))
-        .then(() => config.dbClient.setAsync('SYNC', false));
+        .then(() => config.dbClient.setAsync('SYNC', false))
         .then(() => config.dbClient.setAsync('GAME_STARTED', false));
 });
 
@@ -153,7 +153,10 @@ app.post('/start', (req, res) => {
 
             return multi.execAsync();
         })
-        .then(() => config.dbClient.setAsync('GAME_STARTED', true))
+        .then(() => {
+            config.dbClient.setAsync('GAME_STARTED', true);
+            res.sendStatus(200);
+        })
         .catch(error => {
             console.error(error);
             res.sendStatus(500);
@@ -162,7 +165,6 @@ app.post('/start', (req, res) => {
 
 
 app.get('/gameStarted', (req, res) => {
-    const multi = config.dbClient.multi();
     config.dbClient.getAsync('GAME_STARTED')
         .then(started => {
             if (started === 'false') {
