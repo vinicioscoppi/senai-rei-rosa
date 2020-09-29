@@ -19,6 +19,8 @@ export default class Body extends React.Component {
     }
 
     handleSynchronization = () => {
-        this.setState({ sync : true });
+        const state = this.state;
+        state.sync = true;
+        this.setState(state);
     }
 }
