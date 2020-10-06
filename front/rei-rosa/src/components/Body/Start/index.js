@@ -8,7 +8,7 @@ export default class Start extends React.Component {
     render() {
         return (
             <Container>
-                <Button sync={this.props.sync} />
+                <Button sync={this.props.sync} confirm={this.props.confirm}/>
             </Container>
         );
     }
