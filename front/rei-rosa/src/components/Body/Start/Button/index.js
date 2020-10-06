@@ -3,9 +3,7 @@ import React from 'react';
 import { Container } from './styles';
 
 export default class Button extends React.Component {
-
-  state = { openModal: true };
-
+  
   render() {
     return (
       <Container style={this.props.sync === true ? this.getSyncedStyle() : this.getDefaultStyle()}
