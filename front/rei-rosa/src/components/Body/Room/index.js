@@ -6,7 +6,7 @@ import arrayFromTo from '../../../utils/array-from-to';
 
 export default class Room extends React.Component {
 
-    state = { sync: false, highlightedRoom: 0, clicked: false, rooms: [] };
+    state = { highlightedRoom: 0, anyRoomClickedBefore: false, rooms: [] };
 
     render() {
         return (
@@ -23,31 +23,34 @@ export default class Room extends React.Component {
     renderRoom(i, highlight) {
         return (
             <Button
-                click={this.handleClick}
-                clicked={this.state.clicked}
+                onClick={this.handleClick}
+                clicked={this.state.anyRoomClickedBefore}
                 id={i}
                 highlight={highlight}
-                sync={this.state.sync}
+                sync={this.props.sync}
                 mouseEnter={this.handleMouseEnter}
                 mouseLeave={this.handleMouseLeave}
-                // icon={this.state.rooms[i]?._sticker.geoForm}
-                // color={this.state.rooms[i]?._sticker.color}
             />
         );
     }
 
     handleMouseEnter = (i) => {
-        if (!this.state.clicked)
-            this.setState({ sync: false, highlightedRoom: i, clicked: false, rooms: [] });
+        if (!this.state.anyRoomClickedBefore)
+            this.setState({ highlightedRoom: i, anyRoomClickedBefore: false, rooms: [] });
     }
 
     handleMouseLeave = () => {
-        if (!this.state.clicked)
-            this.setState({ sync: false, highlightedRoom: -1, clicked: false, rooms: [] });
+        if (!this.state.anyRoomClickedBefore)
+            this.setState({ highlightedRoom: -1, anyRoomClickedBefore: false, rooms: [] });
     }
 
     handleClick = async (i) => {
-        this.setState({ sync: this.state.sync, highlightedRoom: i, clicked: true, rooms: await this.getRooms(i + 1) });
+        if (this.props.sync === false) {
+            if (!this.state.anyRoomClickedBefore)
+                this.props.superHandleClick();
+
+            this.setState({ highlightedRoom: i, anyRoomClickedBefore: true, rooms: await this.getRooms(i + 1) });
+        }
     }
 
     getRooms = async (i) => {

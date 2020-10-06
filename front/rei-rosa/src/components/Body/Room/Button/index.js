@@ -2,14 +2,12 @@ import React from 'react';
 
 import { Container } from './styles';
 import AddCircle from '@material-ui/icons/AddCircle';
-// import Square from '@material-ui/icons/CropSquareOutlined';
-// import Circle from '@material-ui/icons/RadioButtonUncheckedOutlined';
 
 export default class Button extends React.Component {
 
     render() {
         return (
-            <Container onClick={() => this.props.click(this.props.id)}
+            <Container onClick={() => this.props.onClick(this.props.id)}
                 onMouseEnter={() => this.props.mouseEnter(this.props.id)}
                 onMouseLeave={() => this.props.mouseLeave(this.props.id)}
                 style={this.getStyle()}>
@@ -21,11 +19,14 @@ export default class Button extends React.Component {
     getStyle = () => {
         if (this.props.highlight)
             if (this.props.clicked)
-                return this.getClickedStyle();
+                if (this.props.sync)
+                    return this.getSyncedStyle();
+                else
+                    return this.getClickedStyle();
             else
                 return this.getHoveredStyle();
         else
-            return this.getNotHoveredStyle();
+            return this.getNotHighlightedStyle();
     }
 
     getHoveredStyle = () => {
@@ -37,7 +38,7 @@ export default class Button extends React.Component {
         }
     }
 
-    getNotHoveredStyle = () => {
+    getNotHighlightedStyle = () => {
         return {
             border: 'solid 4px #e2e6ed',
             background: '#ecf1f8',
@@ -52,38 +53,20 @@ export default class Button extends React.Component {
             transition: 'background 0.3s',
             color: '#c3ccff',
             fontSize: '50px'
-        }
+        };
+    }
+
+    getSyncedStyle = () => {
+        return {
+            border: 'solid 4px #69f0ae',
+            background: '#b9f6ca',
+            transition: 'background 0.3s',
+            color: '#69f0ae',
+            fontSize: '50px'
+        };
     }
 
     getIcon = () => {
         return this.props.clicked ? this.props.id + 1 : <AddCircle style={{ fontSize: 50 }}></AddCircle>;
     }
-
-    // getIcon = () => {
-    //     switch (this.props.icon) {
-    //         case 'CIRCLE':
-    //             return  <Circle style={{ fontSize: 70, color: this.getIconColor() }}></Circle>;
-    //         case 'SQUARE':
-    //             return <Square style={{ fontSize: 70, color: this.getIconColor() }}></Square>;
-    //         default:
-    //             return <AddCircle style={{ fontSize: 50 }}></AddCircle>;
-    //     }
-    // }
-
-    // getIconColor() {
-    //     switch (this.props.color) {
-    //         case 'BLUE':
-    //             return '#536dfe';
-    //         case 'RED':
-    //             return '#ff4081';
-    //         case 'YELLOW':
-    //             return '#ffd740';
-    //         case 'PINK':
-    //             return '#ea80fc';
-    //         case 'GREEN':
-    //             return '#b2ff59';
-    //         default:
-    //             return '#ecf1f8';
-    //     }
-    // }
 }
