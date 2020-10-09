@@ -8,10 +8,22 @@ export default class RoomList extends Component {
         super(props);
     }
     render() {
+        var rooms = [];
+        for (var i = 0; i < this.props.numberOfRooms; i++) 
+            rooms.push(<Room players={0} number={i} key={i}></Room>);
+        
         return (
             <View>
-                <Room>{this.props.numberOfRooms}</Room>
+                {rooms}
             </View>
         );
     }
 }
+/*
+
+{this.state.cells.map((cell) => 
+                   <View key={cell.props.id}>
+                       {cell}
+                   </View> 
+                )}
+                */

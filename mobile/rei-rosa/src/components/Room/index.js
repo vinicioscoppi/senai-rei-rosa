@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableWithoutFeedback} from 'react-native';
 import {styles} from './styles';
 import { maxNumberOfPlayers } from './../../config/roomConfig'
-
+//import { Icon } from 'react-native-vector-icons/Icon';
+import { icons } from './../../enums/icons'
 export class Room extends Component
 {
     constructor(props){
@@ -12,14 +13,24 @@ export class Room extends Component
             max:maxNumberOfPlayers
         }
     }
+    enterRoom = () => {
+        if(this.state.players < this.state.max){
+            alert("Entered!")
+            this.setState({players:this.state.players + 1})
+        } else {
+            alert("Cant Enter!")
+        }
+    }
     render()
     {
         return(
-            <View style={styles.room}>
-                <Text style={styles.roomInfo}>
-                    {this.state.players}/{this.state.max}
-                </Text>
-            </View>
+            <TouchableWithoutFeedback onPress={() => {this.enterRoom()}}>
+                <View style={styles.room}>
+                    <Text style={styles.roomInfo}>
+                        {this.state.players}/{this.state.max}
+                    </Text>
+                </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

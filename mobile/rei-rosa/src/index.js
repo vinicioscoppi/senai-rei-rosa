@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+//import {View, Text} from 'react-native';
 import ChooseRoom from './screens/ChooseRoom/View/index';
 
 export default class App extends Component {
