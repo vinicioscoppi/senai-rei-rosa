@@ -11,7 +11,7 @@ const NUMBER_OF_MAX_USER_IN_ROOM = 4;
 const NUMBER_OF_MIN_USER_IN_ROOM = 2;
 
 //allow CORS (enable when testing requests from the front-end)
-// app.use(config.cors());
+ app.use(config.cors());
 
 app.listen(config.PORT, () => {
     console.log(`> Server running on port ${config.PORT}.`);
@@ -22,7 +22,8 @@ config.dbClient.on('connect', () => {
     config.dbClient.flushallAsync()
         .then(() => config._setupRooms())
         .then(roomsInMemory => config.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', roomsInMemory))
-        .then(() => config.dbClient.setAsync('SYNC', false));
+        .then(() => config.dbClient.setAsync('SYNC', false))
+        .then(() => config.dbClient.setAsync('GAME_STARTED', false));
 });
 
 app.use(config.bodyParser.json());
@@ -48,6 +49,7 @@ app.get('/room/:numberOfRooms', (req, res) => {
 // { user: 'userId', roomIndex: number }
 app.post('/user', (req, res) => {
 
+    
     if (isNaN(req.body.roomIndex))
         res.status(400).send(`Id da sala não é um numero`);
 
@@ -123,4 +125,56 @@ app.post('/sync', (req, res) => {
         }
     });
 });
-    
+
+app.post('/start', (req, res) => {
+    const multi = config.dbClient.multi();
+    config.dbClient.getAsync('SYNC')
+        .then(sync => {
+            if (sync === 'false') {
+                res.send({ synchronized: false });
+            } else if (sync === 'true') {
+                multi.keys('room-*');
+                return multi.execAsync();
+            } 
+        })
+        .then(keys => {
+            keys[0].forEach(key => multi.get(key));
+            return multi.execAsync();
+        })
+        .then(rooms => { 
+            const verifyRooms = rooms.map(room => JSON.parse(room));
+            var roomsToDelete = [];
+            
+            verifyRooms.forEach((room) => { if (room._players.length < 2) roomsToDelete.push(room); });
+
+            if(roomsToDelete.length > 0){
+                roomsToDelete.forEach(room => multi.del(room));
+            }
+
+            return multi.execAsync();
+        })
+        .then(() => {
+            config.dbClient.setAsync('GAME_STARTED', true);
+            res.sendStatus(200);
+        })
+        .catch(error => {
+            console.error(error);
+            res.sendStatus(500);
+        });
+});
+
+
+app.get('/gameStarted', (req, res) => {
+    config.dbClient.getAsync('GAME_STARTED')
+        .then(started => {
+            if (started === 'false') {
+                res.send({ started: false });
+            } else if (started === 'true') {
+                res.send({ started: true });
+            } 
+        })
+        .catch(error => {
+            console.error(error);
+            res.sendStatus(500);
+        });
+});
