@@ -10,7 +10,7 @@ import { color } from './../../../enums/color';
 import { icons } from './../../../enums/icons';
 import { styles } from './styles'
 import { TextView } from './../../../components/TextView/index'
-import { VoteButtons } from './../../../components/VoteButtons/index'
+import { VoteButtons } from './../../../components/VoteButton/index'
 export default class ChooseClass extends Component {
     state = {
         data: [
@@ -34,16 +34,16 @@ export default class ChooseClass extends Component {
                             return <View style={[styles.item, styles.emptyItem]} />;
                         }
                         return (
-                            <TouchableHighlight 
+                            <TouchableHighlight
                                 style={styles.item}
                                 activeOpacity={0.6}
                                 underlayColor={item.color}
                                 onPress={() => alert(item.name + '!')}>
                                 <View style={styles.class} >
-                                    <Icon 
-                                        name={item.icon} 
-                                        size={60} 
-                                        color={item.color} 
+                                    <Icon
+                                        name={item.icon}
+                                        size={60}
+                                        color={item.color}
                                     />
                                 </View>
                             </TouchableHighlight>
