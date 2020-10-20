@@ -1,14 +1,29 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet,Dimensions } from 'react-native';
 
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+const TEXT_FLEX = 0.2;
+const LIST_FLEX = 0.6; // 60% of screen
+const VOTE_FLEX = 0.2;
+const ITEM_HEIGHT = SCREEN_HEIGHT * LIST_FLEX * 0.5 -7;
 export const styles = StyleSheet.create({
+    screen:{
+        flex:1,
+    },
+    textView:{
+        flex:TEXT_FLEX,
+    },
+    listView:{
+        flex:LIST_FLEX,
+    },
+    voteView:{
+        flex:VOTE_FLEX,
+    },
     item: {
-        alignItems: 'center',
-        flexBasis: 0,
-        flexGrow: 1,
-        backgroundColor: '#EEEEEE',
-        margin: 5,
-        padding: 50,
-        borderWidth: 3,
+        flex:1,
+        alignItems: "center",
+        justifyContent:"center",
+        height:ITEM_HEIGHT,
+        borderWidth: 1,
         borderColor: '#000000',
     },
     emptyItem: {
@@ -16,10 +31,18 @@ export const styles = StyleSheet.create({
         padding: 0,
         borderWidth: 0,
         margin: 0,
+        backgroundColor:"#00ff00"
     },
-    list: {
-        marginTop: 0,
-        marginHorizontal: 5,
-        marginBottom: 10
+    classIcon:{
+        fontSize:100,
+    },
+    voteButton:{
+        flex:1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: "center",
+    },
+    voteIcon:{
+        fontSize:50,
     }
 });
