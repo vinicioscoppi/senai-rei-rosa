@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+    Text,
     View,
     TouchableHighlight,
     TouchableWithoutFeedback,
@@ -7,40 +8,51 @@ import {
     SafeAreaView
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { color } from './../../../enums/color';
 import { PLAYER_CLASSES } from './../../../config/config';
-import { icons } from './../../../enums/icons';
+import { NUMBER_OF_COLUMNS } from './../../../config/chooseClassConfig';
 import { styles } from './styles'
 import { TextView } from './../../../components/TextView/index'
-import { VoteButtons } from './../../../components/VoteButton/index'
 export default class ChooseClass extends Component {
     constructor(props){
         super(props);
         this.state = {
             data: PLAYER_CLASSES,
             currentChoice: null,
+            alreadyChosen: false,
         };
     }
     chooseClass = (classId) => {
-        if(!this._classAlreadyChosen(classId)){
-            this.setState({currentChoice:classId});
+        if(classId == this.state.currentChoice) {    
+            this.setState({
+                currentChoice:null,
+                alreadyChosen:false
+            });
+        } else {
+            this.setState({
+                currentChoice:classId,
+                alreadyChosen:this._classAlreadyChosen(classId)
+            });
             //alert(this.state.currentChoice);
         }
-        
     }
     _confirmClass = () => {
-        // Set class and "warns" everyone in the room.
+        // "Warns" everyone in the room this player is ready to play.
+        // ### Need for implementation...
+        //alert(!this.state.alreadyChosen && this.state.currentChoice != null);
     }
     _classAlreadyChosen = (classId) => {
         // makes search on players class to see if there is a repeat. returns TRUE if a repeat is found.
+        // ### Need for implementation...
         return false;
     }
     render() {
-        const NUMBER_OF_COLUMNS = 2;
+        const CUR_CHOICE = this.state.currentChoice;
+        const CUR_CLASSNAME = CUR_CHOICE == null ? null : PLAYER_CLASSES[CUR_CHOICE - 1].name;
+        const ALREADY_CHOSEN = this.state.alreadyChosen;
         return (
             <SafeAreaView style={styles.screen}>
                 <View style={styles.textView}>
-                    <TextView text='Escolha sua classe'></TextView>
+                    <TextView text={CUR_CHOICE == null ? 'Escolha sua classe' : 'Você escolheu o ' + CUR_CLASSNAME}></TextView>
                 </View>
                 <View style={styles.listView}>
                     <FlatList 
@@ -62,7 +74,7 @@ export default class ChooseClass extends Component {
                                         <Icon
                                             style={styles.classIcon}
                                             name={item.icon}
-                                            color={this.state.currentChoice == item.id ? item.color : "#000000"}
+                                            color={CUR_CHOICE == item.id ? item.color : "#000000"}
                                         />
                                     </View>
                                 </TouchableWithoutFeedback>
@@ -70,23 +82,48 @@ export default class ChooseClass extends Component {
                         }}
                     />
                 </View>
-                <View style={styles.voteView} >
-                <TouchableHighlight
-                        style={styles.voteButton}
-                        //underlayColor={color.AGREE}
-                        activeOpacity={0.6}
-                        onPress={() => this._confirmClass()}>
-                        <Icon
-                            style={styles.voteIcon}
-                            name='check'
-                            color={"#000000"}
-                        />
-                    </TouchableHighlight>
+                <View style={styles.confirmView} >
+                    <ConfirmClass alreadyChosen={ALREADY_CHOSEN} classname={CUR_CLASSNAME} action={this._confirmClass}></ConfirmClass>
                 </View>
             </SafeAreaView>
         );
     }
 }
+class ConfirmClass extends Component {
+    constructor(props){
+        super(props);
+    }
+    render() {
+        const CUR_CLASSNAME = this.props.classname;
+        const ALREADY_CHOSEN = this.props.alreadyChosen
+        const _confirmClass = this.props.action;
+        if(!ALREADY_CHOSEN){
+            return (
+                <>
+                    <TouchableHighlight
+                        style={styles.confirmButton}
+                        activeOpacity={0.6}
+                        onPress={() => _confirmClass()}>
+                        <Icon
+                            style={styles.confirmIcon}
+                            name='check'
+                            color={"#000000"}
+                        />
+                    </TouchableHighlight>
+                </>
+            )
+        } else {
+            return (
+                <View style={styles.alreadyChosenView}>
+                    <Text style={styles.alreadyChosenText}>
+                        Outra pessoa também escolheu o {CUR_CLASSNAME}.{"\n"} Cada jogador precisa ser de uma classe diferente.
+                    </Text>
+                </View>
+            );
+        }
+    }
+}
+/*
 function createRows(data, columns) {
     const rows = Math.floor(data.length / columns);
     let lastRowElements = data.length - rows * columns;
@@ -97,4 +134,4 @@ function createRows(data, columns) {
         lastRowElements += 1;
     }
     return data;
-}
+}*/
