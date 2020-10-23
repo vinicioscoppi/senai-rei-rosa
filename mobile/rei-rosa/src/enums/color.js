@@ -18,4 +18,6 @@ export const color = {
     CLASS_MAGE: '#a11ce8',
     CLASS_ARCHER: '#0f8c16',
     CLASS_INVENTOR: '#ffa600',
+
+    OPTION_DISABLED: "#dddddd",
 }

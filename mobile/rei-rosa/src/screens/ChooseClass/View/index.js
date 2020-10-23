@@ -7,11 +7,13 @@ import {
     FlatList,
     SafeAreaView
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { PLAYER_CLASSES } from './../../../config/config';
 import { NUMBER_OF_COLUMNS } from './../../../config/chooseClassConfig';
-import { styles } from './styles'
-import { TextView } from './../../../components/TextView/index'
+import { styles } from './styles';
+import { TextView } from './../../../components/TextView/index';
+import { color } from './../../../enums/color';
+
 export default class ChooseClass extends Component {
     constructor(props){
         super(props);
@@ -95,6 +97,7 @@ class ConfirmClass extends Component {
     }
     render() {
         const CUR_CLASSNAME = this.props.classname;
+        const CHOSED_CLASS = this.props.classname == null;
         const ALREADY_CHOSEN = this.props.alreadyChosen
         const _confirmClass = this.props.action;
         if(!ALREADY_CHOSEN){
@@ -103,14 +106,15 @@ class ConfirmClass extends Component {
                     <TouchableHighlight
                         style={styles.confirmButton}
                         activeOpacity={0.6}
-                        onPress={() => _confirmClass()}>
+                        onPress={() => _confirmClass()}
+                        disabled={CHOSED_CLASS}>
                         <Icon
                             style={styles.confirmIcon}
                             name='check'
-                            color={"#000000"}
+                            color={CHOSED_CLASS ? color.OPTION_DISABLED : "#000000"}
                         />
                     </TouchableHighlight>
-                </>
+                </> 
             )
         } else {
             return (
