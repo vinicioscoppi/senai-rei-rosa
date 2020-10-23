@@ -15,7 +15,7 @@ export class VoteButtons extends Component {
                     style={styles.item}
                     underlayColor={color.DISAGREE}
                     activeOpacity={0.6}
-                    onPress={() => alert('Nope!')}>
+                    onPress={() => this.props.disagree()}>
                     <Icon
                         name='close'
                         size={50}
@@ -27,7 +27,7 @@ export class VoteButtons extends Component {
                     style={styles.item}
                     underlayColor={color.AGREE}
                     activeOpacity={0.6}
-                    onPress={() => alert('Ok!')}>
+                    onPress={() => this.props.agree()}>
                     <Icon
                         name='check'
                         size={50}
