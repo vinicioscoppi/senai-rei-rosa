@@ -1,10 +1,31 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet,Dimensions } from 'react-native';
 
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+const TEXT_FLEX = 0.2;
+const LIST_FLEX = 0.6; // 60% of screen
+const CONFIRM_FLEX = 0.2;
+const ITEM_HEIGHT = SCREEN_HEIGHT * LIST_FLEX * 0.5 -7;
 export const styles = StyleSheet.create({
+    screen:{
+        flex:1,
+    },
+    textView:{
+        flex:TEXT_FLEX,
+    },
+    listView:{
+        flex:LIST_FLEX,
+    },
+    confirmView:{
+        flex:CONFIRM_FLEX,
+        justifyContent:"center",
+    },
     item: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 5,
+        flex:1,
+        alignItems: "center",
+        justifyContent:"center",
+        height:ITEM_HEIGHT,
+        borderWidth: 1,
+        borderColor: '#000000',
     },
     emptyItem: {
         height: 0,
@@ -12,20 +33,24 @@ export const styles = StyleSheet.create({
         borderWidth: 0,
         margin: 0,
     },
-    class: {
-        backgroundColor: '#EEEEEE',
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 5,
-        padding: 5,
-        height: 150,
-        width: 180,
-        borderWidth: 3,
-        borderColor: '#000000',
+    classIcon:{
+        fontSize:100,
     },
-    list: {
-        marginTop: 0,
-        marginHorizontal: 5,
-        marginBottom:10
+    alreadyChosenView:{
+        margin:5,
+    },
+    alreadyChosenText:{
+        fontSize:18,
+        textAlign:"center",
+        textAlignVertical:"center",
+    },
+    confirmButton:{
+        flex:1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: "center",
+    },
+    confirmIcon:{
+        fontSize:50,
     }
 });

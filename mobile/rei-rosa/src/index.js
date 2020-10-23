@@ -1,14 +1,27 @@
 import React, { Component } from 'react';
-//import {View, Text} from 'react-native';
-import ChooseRoom from './screens/ChooseRoom/View/index';
-
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  StatusBar,
+  Button,
+  TouchableHighlight,
+} from 'react-native';
+import {
+  Header,
+  LearnMoreLinks,
+  Colors,
+  DebugInstructions,
+  ReloadInstructions,
+} from 'react-native/Libraries/NewAppScreen';
+import { TextView } from './components/TextView/index'
+import ChooseClass from './screens/ChooseClass/View/index'
 export default class App extends Component {
-  constructor() {
-    super();
-  }
-  render() { 
+  render() {
     return (
-      <ChooseRoom></ChooseRoom>
+      <ChooseClass></ChooseClass>
     );
   }
 }

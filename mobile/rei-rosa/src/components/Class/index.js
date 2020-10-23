@@ -1,20 +1,33 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import {
+    SafeAreaView,
+    StyleSheet,
+    TouchableHighlight,
+    View,
+    Text,
+    Button,
+    Alert
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { styles } from './styles';
+import { styles } from './class-styles';
+import { color } from './../../enums/color';
+import { icons } from './../../enums/icons';
 export class Class extends Component {
     constructor(props) {
         super(props);
     }
     render() {
         return (
-            <View style={styles.class}>
+            <TouchableHighlight style={styles.item}
+                activeOpacity={this.props.activeOpacity}
+                underlayColor={this.props.underlayColor}
+                onPress={() => alert('!')}>
                 <Icon
                     name={this.props.name}
-                    size={this.props.size}
+                    size={this.props.activeOpacity}
                     color={this.props.color}
                 />
-            </View>            
+            </TouchableHighlight>
         );
     }
 }
