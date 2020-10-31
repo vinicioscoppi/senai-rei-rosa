@@ -11,7 +11,7 @@ const NUMBER_OF_MAX_USER_IN_ROOM = 4;
 const NUMBER_OF_MIN_USER_IN_ROOM = 2;
 
 //allow CORS (enable when testing requests from the front-end)
- app.use(config.cors());
+app.use(config.cors());
 
 app.listen(config.PORT, () => {
     console.log(`> Server running on port ${config.PORT}.`);
@@ -49,7 +49,7 @@ app.get('/room/:numberOfRooms', (req, res) => {
 // { user: 'userId', roomIndex: number }
 app.post('/user', (req, res) => {
 
-    
+
     if (isNaN(req.body.roomIndex))
         res.status(400).send(`Id da sala não é um numero`);
 
@@ -67,7 +67,7 @@ app.post('/user', (req, res) => {
                 res.status(400).send(`Numero de usuários deve ser entre ${NUMBER_OF_MIN_USER_IN_ROOM} e ${NUMBER_OF_MAX_USER_IN_ROOM}.`);
             else {
                 obj._players.push(user);
-                roomRepo.addToRoom(idRoom, config.dbClient, obj).then(() => res.send({ 'users':obj._players, idRoom }));
+                roomRepo.addToRoom(idRoom, config.dbClient, obj).then(() => res.send({ 'users': obj._players, idRoom }));
             }
         }
     ).catch(error => console.error(error));
@@ -110,18 +110,18 @@ app.post('/sync', (req, res) => {
             let currentNumberOfRooms = 0;
             const multi = config.dbClient.multi();
             config.dbClient.getAsync('CURRENT_NUMBER_OF_ROOMS')
-            .then(currentNumber => {
-                currentNumberOfRooms = currentNumber;
-                multi.keys('room-*');
-                return multi.execAsync();
-            })
-            .then(keys => keys[0].filter(key => parseInt(key.substring(5)) > currentNumberOfRooms))
-            .then(roomsToDelete => {
-                roomsToDelete.forEach(room => multi.del(room));
-                return multi.execAsync();
-            })
-            .then(() => config.dbClient.setAsync('SYNC', true))
-            .then(() => res.send({ synchronized: true }));
+                .then(currentNumber => {
+                    currentNumberOfRooms = currentNumber;
+                    multi.keys('room-*');
+                    return multi.execAsync();
+                })
+                .then(keys => keys[0].filter(key => parseInt(key.substring(5)) > currentNumberOfRooms))
+                .then(roomsToDelete => {
+                    roomsToDelete.forEach(room => multi.del(room));
+                    return multi.execAsync();
+                })
+                .then(() => config.dbClient.setAsync('SYNC', true))
+                .then(() => res.send({ synchronized: true }));
         }
     });
 });
@@ -135,19 +135,19 @@ app.post('/start', (req, res) => {
             } else if (sync === 'true') {
                 multi.keys('room-*');
                 return multi.execAsync();
-            } 
+            }
         })
         .then(keys => {
             keys[0].forEach(key => multi.get(key));
             return multi.execAsync();
         })
-        .then(rooms => { 
+        .then(rooms => {
             const verifyRooms = rooms.map(room => JSON.parse(room));
             var roomsToDelete = [];
-            
+
             verifyRooms.forEach((room) => { if (room._players.length < 2) roomsToDelete.push(room); });
 
-            if(roomsToDelete.length > 0){
+            if (roomsToDelete.length > 0) {
                 roomsToDelete.forEach(room => multi.del(room));
             }
 
@@ -171,7 +171,7 @@ app.get('/gameStarted', (req, res) => {
                 res.send({ started: false });
             } else if (started === 'true') {
                 res.send({ started: true });
-            } 
+            }
         })
         .catch(error => {
             console.error(error);
