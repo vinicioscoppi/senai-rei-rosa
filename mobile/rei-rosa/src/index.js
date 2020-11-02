@@ -16,12 +16,13 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import { TextView } from './components/TextView/index'
-import ChooseClass from './screens/ChooseClass/View/index'
+import { TextView } from './components/TextView/index';
+import ChooseClass from './screens/ChooseClass/View/index';
+import AtributeScreen from './screens/AtributeScreen/View/index';
 export default class App extends Component {
   render() {
     return (
-      <ChooseClass></ChooseClass>
+      <AtributeScreen></AtributeScreen>
     );
   }
 }
