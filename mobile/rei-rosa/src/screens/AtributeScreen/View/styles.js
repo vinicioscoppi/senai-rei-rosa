@@ -22,6 +22,9 @@ export const styles = StyleSheet.create({
     voteView:{
       flex:0.10,
       //backgroundColor:"#f0000f",
+    },
+    voteViewDisabled:{
+      opacity:0.3,
     }
     /*app: {
       flex:1,

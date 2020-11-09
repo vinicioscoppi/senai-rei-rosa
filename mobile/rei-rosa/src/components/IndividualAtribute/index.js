@@ -6,8 +6,8 @@ import {
 } from 'react-native';
 import {color} from './../../enums/color';
 import { styles } from './styles';
-import Icon from 'react-native-vector-icons/FontAwesome'
-import { icons } from './../../enums/icons'
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { icons } from './../../enums/icons';
 
 export class IndividualAtributes extends Component
 {
@@ -16,12 +16,36 @@ export class IndividualAtributes extends Component
     }
     render()
     {
+        const atributes = this.props.atributes;
+        const updateAtributes = this.props.updateAtributes;
         return(
             <View style={styles.atributes}>  
-                <AtributeBar key={1} atribute="FORCA" colorEnabled={color.STRENGTH_ENABLED} colorDisabled={color.STRENGTH_DISABLED} score={6}></AtributeBar>
-                <AtributeBar key={2} atribute="CORAGEM" colorEnabled={color.BRAVERY_ENABLED} colorDisabled={color.BRAVERY_DISABLED} score={6}></AtributeBar>
-                <AtributeBar key={3} atribute="AMIZADE" colorEnabled={color.FRIENDSHIP_ENABLED} colorDisabled={color.FRIENDSHIP_DISABLED} score={6}></AtributeBar>
-                <AtributeBar key={4} atribute="SABEDORIA" colorEnabled={color.WISDOW_ENABLED} colorDisabled={color.WISDOM_DISABLED} score={6}></AtributeBar>
+                <AtributeBar key={1} 
+                    atribute="FORCA" 
+                    colorEnabled={color.STRENGTH_ENABLED} 
+                    colorDisabled={color.STRENGTH_DISABLED} 
+                    score={atributes.strenght}
+                    onScoreChange={(newScore) => updateAtributes({strenght:newScore})}>
+                </AtributeBar>
+                <AtributeBar key={2} 
+                    atribute="CORAGEM" 
+                    colorEnabled={color.BRAVERY_ENABLED} 
+                    colorDisabled={color.BRAVERY_DISABLED} 
+                    score={atributes.bravery}
+                    onScoreChange={(newScore) => updateAtributes({bravery:newScore})}>
+                </AtributeBar>
+                <AtributeBar key={3} atribute="AMIZADE" 
+                    colorEnabled={color.FRIENDSHIP_ENABLED} 
+                    colorDisabled={color.FRIENDSHIP_DISABLED} 
+                    score={atributes.friendship}
+                    onScoreChange={(newScore) => updateAtributes({friendship:newScore})}>
+                </AtributeBar>
+                <AtributeBar key={4} atribute="SABEDORIA" 
+                    colorEnabled={color.WISDOW_ENABLED} 
+                    colorDisabled={color.WISDOM_DISABLED} 
+                    score={atributes.wisdom}
+                    onScoreChange={(newScore) => updateAtributes({wisdom:newScore})}>
+                </AtributeBar>
             </View>
         );
     }
@@ -31,18 +55,16 @@ class AtributeBar extends Component {
     constructor(props){
         super(props);
         this.generateCells = this.generateCells.bind(this);
-        this.allowCellChanges = this.allowCellChanges.bind(this);
-        this.state = {
-            cells: this.generateCells(this.props.score), 
-            score:this.props.score
-        };
+        this.changeCell = this.changeCell.bind(this);
     }
     render()
     {
+        const SCORE = this.props.score;
+        const cells = this.generateCells(SCORE);
         return(
             <View style={styles.atributeBar}>
                 <View style={styles.atributeBarCells}>
-                    {this.state.cells.map((cell) => 
+                    {cells.map((cell) => 
                         <View style={styles.cellView} key={cell.props.id}>
                             {cell}
                         </View> 
@@ -56,23 +78,23 @@ class AtributeBar extends Component {
             </View>
         );
     }
-    allowCellChanges = (idCellToChange) =>
+    changeCell = (id) =>
     {
-        const changeIsAdding1Point = (idCellToChange == (this.state.score + 1));
-        const changeIdSubtracting1Point = (idCellToChange == this.state.score);
+        const CUR_SCORE = this.props.score; 
+        const changeIsAdding1Point = id == (CUR_SCORE + 1);
+        const changeIdSubtracting1Point = id == CUR_SCORE;
         const IAllowCellToChange = changeIsAdding1Point || changeIdSubtracting1Point;
         
-        let newScore = this.state.score;
+        let NEW_SCORE = CUR_SCORE;
 
         if(changeIsAdding1Point){
-            newScore++;
+            NEW_SCORE++;
         }
         if(changeIdSubtracting1Point){ 
-            newScore--;
+            NEW_SCORE--;
         }
 
-        this.setState({score:newScore});
-        return IAllowCellToChange;
+        this.props.onScoreChange(NEW_SCORE);
     }
     generateCells = (score) => 
     {
@@ -87,7 +109,7 @@ class AtributeBar extends Component {
                     enabled={i <= score} 
                     colorEnabled={this.props.colorEnabled} 
                     colorDisabled={this.props.colorDisabled} 
-                    action={() => this.allowCellChanges(i)}>
+                    action={(id) => this.changeCell(id)}>
                 </AtributeCell>
             );   
         }
@@ -100,27 +122,22 @@ class AtributeBar extends Component {
 class AtributeCell extends Component{
     constructor(props){
         super(props);
-        this.state = {enabled: this.props.enabled}
-        this.switchEnableState.bind(this);
     }
     render()
     {
+        const ENABLED = this.props.enabled;
+        const COLOR_ENABLED = this.props.colorEnabled;
+        const COLOR_DISABLED = this.props.colorDisabled;
         return(
-            <TouchableOpacity onPress={() => this.switchEnableState()}>
-                <View style={
-                    (this.state.enabled === true) ? 
-                    [styles.atributeCell, {backgroundColor: this.props.colorEnabled,}] : 
-                    [styles.atributeCell, {backgroundColor: this.props.colorDisabled,}]
-                }>
+            <TouchableOpacity onPress={() => this.props.action(this.props.id)}>
+                <View style={[
+                    styles.atributeCell, 
+                    {backgroundColor: ENABLED ? COLOR_ENABLED : COLOR_DISABLED}
+                ]}>
                     <Text style={styles._id}>{this.props.id}</Text>
                 </View>
             </TouchableOpacity>
         )
-    }
-    switchEnableState(){
-        if(this.props.action(this.props.id)){
-            this.setState({enabled:!this.state.enabled});
-        }
     }
 }
 
