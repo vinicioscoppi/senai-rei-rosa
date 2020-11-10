@@ -1,32 +1,49 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet,Dimensions } from 'react-native';
+import {color} from './../../enums/color';
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const BAR_WIDTH_PERCENT = 0.91;
+const BAR_MARGIN = 5;
+
+const INITIAL_WIDTH = SCREEN_WIDTH * BAR_WIDTH_PERCENT - 2*BAR_MARGIN;
 
 export const styles = StyleSheet.create({
     teamAtributes:{
-        marginHorizontal: 10,
-        marginTop: 5,
+        flex:1,
+        flexDirection:"column",
+        justifyContent:"space-evenly",
+        marginHorizontal:BAR_MARGIN,
+    },
+    teamAtributeView:{
+        alignItems:"center",
+        justifyContent:"center",
         flexDirection: 'row',
+    },
+    barView:{
+        flex:0.9,
+    },
+    iconView:{
+        flex:0.1,
+    },
+    barView:{
+        flexDirection:"column",
+        flex:1,
+        backgroundColor:"#000000",
     },
     teamAtributeBar: {
-        width: 335,
+        width: INITIAL_WIDTH,
         flexDirection: 'row',
-        alignItems: 'center',
     },
     waterBar: {
-        backgroundColor: '#1e90ff',
-        height: 20,
+        backgroundColor: color.WATER,
         borderWidth: 1,
     },
     foodBar: {
-        backgroundColor: '#ff7105',
-        height: 20,
+        backgroundColor: color.FOOD,
         borderWidth: 1
     },
     icons: {
-        marginRight: 5,
-        paddingHorizontal: 0,
-        padding: 5, 
-        height: 37,
-        width: 37,
+        fontSize:30,
         textAlign: 'center',
     }, 
 });
