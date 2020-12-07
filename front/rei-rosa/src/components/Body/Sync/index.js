@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Container } from './styles';
 import Title from './Title';
-import Button from './Button';
 
 export default class Sync extends React.Component {
 
