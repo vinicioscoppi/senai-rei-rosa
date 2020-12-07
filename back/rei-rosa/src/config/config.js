@@ -2,10 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const Room = require('../models/room');
-const Sticker = require('../models/sticker');
-
-const stickerColors = require('../models/enums/room-sticker-color');
-const stickerGeoForms = require('../models/enums/room-sticker-geo-form');
+const arrayFromTo = require('../utils/array-from-to');
 
 module.exports = class Config {
     constructor(dbClient) {
@@ -18,18 +15,14 @@ module.exports = class Config {
 
     _setupRooms() {
         const multi = this.dbClient.multi();
-        let roomsInMemory = 0;
-        stickerColors.forEach((color, i) => {
-            stickerGeoForms.forEach((geoForm, j) => {
-                let key = `room-${j + 1 + (i * stickerGeoForms.length)}`;
-                let value = JSON.stringify(new Room(new Sticker(color, geoForm)));
-                multi.set(key, value);
-                roomsInMemory++;
-            });
+        arrayFromTo(1, 10).forEach(index => {
+            const key = `room-${index}`;
+            const value = JSON.stringify(new Room(index));
+            multi.set(key, value);
         });
         return multi.execAsync().then(() => {
-            console.log(`> Setup finished adding ${roomsInMemory} rooms.`);
-            return roomsInMemory;
-         }).catch(err => { console.error(err); return 0; });
+            console.log(`> Setup finished adding 10 rooms.`);
+            return 10;
+        }).catch(err => { console.error(err); return 0; });
     }
 }
