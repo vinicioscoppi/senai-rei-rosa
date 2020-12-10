@@ -2,6 +2,7 @@ import { states } from '../enums/states';
 import {screen} from './../enums/screen';
 
 export const _1P_MODE = true;
+
 export const _1P_ROOM_NULL = {
     water:100,
     food:100,
@@ -15,7 +16,7 @@ export const _1P_ROOM_NULL = {
     players:[
         {
             classId:null,
-            strenght:null,
+            strength:null,
             bravery:null,
             friendship:null,
             wisdom:null,
@@ -33,13 +34,14 @@ export const _1P_ROOM_FILLED = {
     square:0,
     turn:1,
     gameRunning:false,
+    card:null,
     myClass:1,
     gameState:states.VOTING,
     proposal:null,
     players:[
         {
             classId:1,
-            strenght:6,
+            strength:6,
             bravery:4,
             friendship:2,
             wisdom:3,
@@ -51,44 +53,52 @@ export const _1P_ROOM_FILLED = {
         null,
     ]
 }
-/*
-**NEW_ROOM** = {
-    water:100,
-    food:100,
-    square:0,
-    turn:1,
-    gameRunning:false,
-    players:{
-        1:null,
-        2:null,
-        3:null,
-        4:null,
-    }
+export const _1P_ROOMS=[
+    {"card":null,"food":10,"gameRunning":false,"gameState":states.CHOOSING_ROOM,"myClass":null,"players":[null,null,null,null],"proposal":null,"room":null,"square":0,"turn":null,"water":10},
+,{"card": null, "food": 10, "gameRunning": false, "gameState": 2, "myClass": null, "players": [null, null, null, null], "proposal": null, "room": null, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 3, "myClass": "1", "players": [{"bravery": null, "classId": "1", "friendship": null, "screen": 3, "strength": 6, "vote": null, "wisdom": null}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": false, "gameState": 2, "myClass": null, "players": [null, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 4, "myClass": "1", "players": [{"bravery": 1, "classId": "1", "friendship": null, "screen": 4, "strength": 6, "vote": null, "wisdom": null}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 4, "myClass": "1", "players": [{"bravery": null, "classId": "1", "friendship": null, "screen": 4, "strength": 6, "vote": null, "wisdom": null}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 4, "myClass": "1", "players": [{"bravery": 1, "classId": "1", "friendship": 5, "screen": 4, "strength": 6, "vote": null, "wisdom": null}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 4, "myClass": "1", "players": [{"bravery": 1, "classId": "1", "friendship": null, "screen": 4, "strength": 6, "vote": null, "wisdom": null}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 4, "myClass": "1", "players": [{"bravery": 1, "classId": "1", "friendship": 5, "screen": 4, "strength": 6, "vote": null, "wisdom": null}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+,{"card": null, "food": 10, "gameRunning": true, "gameState": 5, "myClass": "1", "players": [{"bravery": 1, "classId": "1", "friendship": 5, "screen": 3, "strength": 6, "vote": null, "wisdom": 2}, null, null, null], "proposal": null, "room": 1, "square": 0, "turn": null, "water": 10}
+]
+export const _1P_ROOM_NEWGAME={
+    "card": null, 
+    "food": 10, 
+    "gameRunning": false, 
+    "gameState": states.CHOOSING_ROOM, 
+    "myClass":null, 
+    "players": [null,null,null, null], 
+    "proposal": null, 
+    "room": null,
+    "square": 0, 
+    "turn": null, 
+    "water": 10,
 }
 
-**NEW_PLAYER** = {
-    myClass:null,
-    strenght:null,
+export const _1P_ROOM_CHOOSINGCLASS = {
+    "card": null, 
+    "food": 10, 
+    "gameRunning": false, 
+    "gameState": 2, 
+    "myClass": null, 
+    "players": [null, null, null, null], 
+    "proposal": null, 
+    "room": 1, 
+    "square": 0, 
+    "turn": null, 
+    "water": 10
+}
+
+export const _NEW_PLAYER = {
+    classId:null,
+    strength:null,
     bravery:null,
     friendship:null,
-    wisdow:null,
-    screen:screen.CHOOSE_ROOM,
+    wisdom:null,
+    screen:null,
     vote:null,
 }
-
-** FUNÇÕES **
-
-*BackEnd*
-createRooms(n)
-syncRooms(rooms) 
-haltGame()
-
-*Mobile*
-getRooms() 
-haltGame() 
-updateRoom(state) 
-runOutOf(atrib) 
-gotoSquare(n) 
-vote(vote) 
-propose(state) 
-openCard() */

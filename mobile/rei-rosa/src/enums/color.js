@@ -20,4 +20,8 @@ export const color = {
     CLASS_INVENTOR: '#ffa600',
 
     OPTION_DISABLED: "#dddddd",
+
+    BIOME_FOREST: '#256117',
+    BIOME_DESERT: '#ff9100',
+    BIOME_MOUNTAIN: '#4063ff',
 }

@@ -1,17 +1,21 @@
 export const states = {
-    HALT:0,
-    CHOOSING_CLASS:1,
-    CHOOSING_ROOM:2,
-    STARTING_GAME:3,
-    SPIN_GET_ATRIBUTES:2,
-    SPIN_NUMBER_OF_SQUARES:3,
-    SPIN_PROBABILITY_CARD:4,
-    CARD_CLOSED:5,
-    CARD_OPENED:6,
-    VOTING:7,
-    VOTE_END_AGREE:8,
-    VOTE_END_DISAGREE:9,
-    GAME_ENDING:10,
+    HALT:0, // Estado quando o professor "destrói" as salas antes do jogo terminar.
+    CHOOSING_ROOM:2,// Estado escolhendo sala
+    CHOOSING_CLASS:1, // Estado escolhendo classe
+    STARTING_GAME:3, // Estado quando o jogo acabou de começar e os atributos iniciais vão ser colocados
+    SPIN_GET_ATRIBUTES:4, // Estado quando o jogador está escolhendo seus atributos iniciais
+    WAITING_FOR_ACTION:5, // Estado esperando o clique do usuário
+    SPIN_NUMBER_OF_SQUARES:6, // Girando a roleta para saber quantas casas andar
+    //SPIN_PROBABILITY_CARD:7, // Girando a roleta para ver por causa de um desafio de carta
+    SPINNING:8,
+    REVEAL_SPIN_RESULT:9, // Estado ao revelar o número tirado pela roleta
+    CARD_CLOSED:10, // Carta fechada
+    CARD_OPENED:11, // Carta aberta (desafio conhecido)
+    CARD_SOLVED:16, // Estado quando a carta é resolvida
+    VOTING:12, // Votando em uma proposta de um jogador
+    VOTE_END_AGREE:13, // Grupo aceita a proposta do jogador
+    VOTE_END_DISAGREE:14, // Grupo cancela a proposta do jogador
+    GAME_ENDING:15, // Fim de jogo (Precisamos conversar com a Elisa sobre isso...)
 }
 
 /*

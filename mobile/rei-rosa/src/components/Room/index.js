@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import { View, Text, TouchableWithoutFeedback, Alert} from 'react-native';
 import {styles} from './styles';
 import { maxNumberOfPlayers } from './../../config/roomConfig'
-
-//import { Icon } from 'react-native-vector-icons/Icon';
 import { icons } from './../../enums/icons'
 
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -44,7 +42,7 @@ export class Room extends Component
     }
     enterRoom = () => {
         // Falta Implementar função que irá mandar as alterações para os demais jogadores
-        this.setState({players:this.state.players + 1})
+        this.props.onEnter(this.props.number);
     }
     render()
     {

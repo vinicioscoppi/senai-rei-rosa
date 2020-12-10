@@ -31,16 +31,11 @@ export const styles = StyleSheet.create({
         backgroundColor:"#000000",
     },
     teamAtributeBar: {
-        width: INITIAL_WIDTH,
-        flexDirection: 'row',
-    },
-    waterBar: {
-        backgroundColor: color.WATER,
-        borderWidth: 1,
-    },
-    foodBar: {
-        backgroundColor: color.FOOD,
-        borderWidth: 1
+        flex:1,
+        flexDirection:"row",
+        //width: INITIAL_WIDTH,
+        flexBasis:30,
+        //margin:"auto",
     },
     icons: {
         fontSize:30,

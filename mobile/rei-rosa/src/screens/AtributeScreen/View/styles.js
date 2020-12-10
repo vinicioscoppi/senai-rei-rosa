@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     },
     textView:{
       flex:0.18,
-      backgroundColor:"#00ff00",
+      //backgroundColor:"#00ff00",
     },
     individualAtributesView:{
       flex:0.6,

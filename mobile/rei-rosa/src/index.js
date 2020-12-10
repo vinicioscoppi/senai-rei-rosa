@@ -21,87 +21,460 @@ import ChooseClass from './screens/ChooseClass/View/index';
 import AtributeScreen from './screens/AtributeScreen/View/index';
 import ChooseRoom from './screens/ChooseRoom/View/index';
 import Roulette from './screens/Roulette/View/index';
-import {_1P_MODE, _1P_ROOM_FILLED} from './config/dev_config';
+import Card from './screens/Card/View/index';
+import {
+  _1P_MODE, 
+  _NEW_PLAYER,
+  _1P_ROOM_NEWGAME,
+  _1P_ROOMS
+} from './config/dev_config';
 import {screen} from './enums/screen';
-
+import { states } from './enums/states';
+import * as CONFIG from './config/config';
+import * as utils from './util/utils';
+import { PopupRunOutOf } from './components/PopupRunOutOf';
 export default class App extends Component {
   constructor(props){
-    super(props)
-    this.state = _1P_MODE ? _1P_ROOM_FILLED : startGame();
+    super(props);
+    //_1P_ROOM_NEWGAME.screen = screen.CHOOSE_ROOM;
+    const testing = true;
+    const initRoom = testing ? 
+      _1P_ROOMS[_1P_ROOMS.length-1] : _1P_ROOMS[0]
+    this.state = _1P_MODE ? initRoom : this.startGame();
+    //console.log(_1P_ROOMS.length)
+    console.log("\n \n \n \n \n \n \n");
+    
+    //console.log(_1P_ROOM_NEWGAME);
+  }
+  componentDidMount(){
+    clearInterval(this.atributeTimers);
+    if(this.state.gameRunning)
+      this.setAtributeTimers();
+  }
+  setAtributeTimers(){
+    this.atributeTimers = setInterval(()=>{
+      let u = {};
+      let increment; 
+      for(let att of CONFIG.TEAM_ATRIBUTES){
+        increment = -1*CONFIG.TIMER_UPDATE_TIME/1000*att.points/att.time;
+        u[att['name']]=this.state[att['name']]+increment;
+        if(u[att['name']]<=0){
+          this.runOutOf(att);
+        }
+      }
+      this.updateGame(u);
+    },CONFIG.TIMER_UPDATE_TIME)
+  }
+  runOutOf(att){
+    let u = {};
+    u[att['name']]=0;
+    u['gameState'] = this.state.gameState;
+    u['players'] = this.getMyUpdatedPlayer({screen:screen.RUN_OUT_OF})
+    this.screenBeforePopup = utils.getMyScreen(this.state);
+    clearInterval(this.atributeTimers);
+    this.updateGame(u);
+  }
+  onRunOutOfSolve(att){
+    let up = {};
+    up[att['name']]=att['points'];
+    up['square'] = utils.getRefillSquare(this.state,att);
+    up['players'] = utils.getMyUpdatedPlayer(this.state,{screen:this.screenBeforePopup})
+    this.updateGame(up);
+    this.screenBeforePopup = null;
+    this.setAtributeTimers();
+  }
+  findMyPlayer(){
+    return this.state['players'].find((p)=>{
+      if(p!=null){
+        return p['classId'] === this.state['myClass'];
+      }
+    })
+  }
+  findMyPlayerIndex(){
+    return this.state['players'].findIndex((p)=>{
+      if(p!=null){
+        return p['classId'] === this.state['myClass'];
+      }
+    })
+  }
+  getMyUpdatedPlayer(u){
+    const myPlayer = this.findMyPlayer();
+    const myUpdatedPlayer = {...myPlayer,...u};
+    const myIndex = this.findMyPlayerIndex();
+    let gamePlayers = this.state['players'];
+    gamePlayers[myIndex] = myUpdatedPlayer;
+    return gamePlayers;
+  }
+  updateGame(u){
+    let myUpdatedGame = {...this.state,...u}
+    if(this.state.gameRunning == false){
+      this.warnAllPlayers();
+    }
+    this.setState(myUpdatedGame);
+  }
+  addMyPlayer(myPlayer){
+    const myIndex = this.state['players'].findIndex((p)=>{return p==null})
+    let newPlayers = this.state['players'];
+    newPlayers[myIndex] = myPlayer
+    return newPlayers;
+  }
+  findTurn(){
+    let validPIds = this.state['players'].filter((el)=>{
+      return el!=null
+    }).map((el)=>{
+      return el['classId'];
+    })
+
+    if(this.state.turn === null){
+      return validPIds[0];
+    } else {
+      return this.state.turn++%validPIds.length;
+    }
+  }
+  // Must implement later...
+  warnAllPlayers(){
+    //console.warn(`Warning all players`);
+  }
+  getMyScreen(){
+    if(this.state['gameRunning'])
+      return this.state['players'][this.findMyPlayerIndex()]['screen'];
+    if(isNull(this.state['room']))
+      return screen.CHOOSE_ROOM;
+    if(isNull(this.state['myClass']))
+      return screen.CHOOSE_CLASS;
+  }
+  startGame(myClass){
+    if(_1P_MODE){
+      this.updateGame({
+        myClass:myClass,
+        gameRunning:true,
+        gameState:states.STARTING_GAME
+      },this.addMyPlayer({
+        ...createPlayer(myClass),
+        ...{screen:screen.ATRIBUTE_SCREEN}})
+      )
+      //console.log("STARTING 1 PLAYER MODE...\nHAVE FUN :)")
+    } else{
+      //console.log("MULTIPLAYER MODE STILL NOT WORKING :C");
+      return null;
+    }
+  }
+  updateFlow(gs,scr){
+    this.updateGame({
+      gameState:gs,
+      players:this.getMyUpdatedPlayer({screen:scr})
+    })
   }
 
-  startGame(){
-    return null; // Falta Implementar
+  _getInitialAtributes(n){
+    const G = this.state;
+    const MY_PLAYER = utils.findMyPlayer(G);
+    const myNullAtts = utils.findMyNullAtributes(MY_PLAYER)
+    
+    const nextNullAtt = myNullAtts[0];
+    const lastIteration = myNullAtts.length > 1;
+    
+    let update={}, newGS, newScr; 
+    update[nextNullAtt?.['name']]=n;
+    
+    if(lastIteration){
+      newGS=states.SPIN_GET_ATRIBUTES; newScr=screen.ROULETTE;
+    } else {
+      newGS=states.WAITING_FOR_ACTION; newScr=screen.ATRIBUTE_SCREEN;
+    }
+
+    update['screen'] = newScr;
+    this.updateGame({players:this.getMyUpdatedPlayer(update),gameState:newGS});
   }
 
-  updateGame(newState){
-    this.setState(newState);
+  _advanceSquares(n){
+    const newSquare = this.state.square + n;
+    let newGState, newScreen;
+    ///... check if there is a card
+    delay(2000).then(()=>{
+      if(CONFIG.CARD_SQUARES.includes(newSquare)){
+        newScreen = screen.CARD;
+        newGState = states.CARD_CLOSED;
+      } else {
+        newScreen = screen.ATRIBUTE_SCREEN;
+        newGState = states.WAITING_FOR_ACTION;
+      }
+    }).then(()=>{
+      this.updateGame({
+        square:newSquare,
+      })
+      
+    }).then(()=>{
+      delay(2000).then(()=>{
+        this.updateFlow(newGState,newScreen)
+      })
+    })
   }
 
-  updatePlayer(newState){
-    this.setState({
-      players: newState
-    });
-  }
-  
+  componentDidUpdate(){
+    const G = this.state;
+    const GS = G.gameState;
+    const CUR_SCR = this.getMyScreen();
+    if(G.square > CONFIG.BOARD_SIZE && GS != states.END){
+      this.updateFlow(states.END,screen.END);
+      console.log("YOU WON THE GAME");
+    }
 
+    // Start game
+    /*  switch(GS){
+        case states.STARTING_GAME:       
+          delay(10000).then(() => {
+            //this.updateFlow(states.SPIN_GET_ATRIBUTES,screen.ATRIBUTE_SCREEN);
+          });
+
+          break;
+        case states.SPIN_GET_ATRIBUTES:
+          //console.log("GETTING ATRIBUTES");
+          break;
+        case states.WAITING_FOR_ACTION:
+          if(CUR_SCR == screen.ATRIBUTE_SCREEN){
+            delay(5000).then(()=>{
+
+              this.updateFlow(states.SPIN_NUMBER_OF_SQUARES,screen.ROULETTE)
+
+            });
+          }
+          break;
+      }*/
+  }
   render() {
-    const CUR_SCREEN = this.state.players[this.state.myClass-1].screen;
-    switch(CUR_SCREEN){
+    console.info(this.state);
+    const G = this.state;
+    const GS = G.gameState
+    switch(this.getMyScreen()){  
       case screen.CHOOSE_ROOM:
         return (
           <ChooseRoom 
             gameStats={this.state} 
-            updateGame={(newState) => this.updateGame(newState)}>
+            updateGame={(u)=>this.updateGame(u)}>
           </ChooseRoom>
-        );
+        )
       case screen.CHOOSE_CLASS:
         return (
           <ChooseClass 
             gameStats={this.state} 
-            updateGame={(newState) => this.updateGame(newState)}>
+            onConfirmClass={(cls)=>this.startGame(cls)}>
           </ChooseClass>
         );
-      case screen.ROULETTE:
-        return (
-          <Roulette 
-            gameStats={this.state} 
-            updateGame={(newState) => this.updateGame(newState)}>
-          </Roulette>
-        );
       case screen.ATRIBUTE_SCREEN:
+        if(GS == states.STARTING_GAME){
+          return (
+            <AtributeScreen 
+              onScreenClick={()=>{this.updateFlow(states.SPIN_GET_ATRIBUTES,screen.ROULETTE);}}
+              gameStats={this.state} 
+              updatePlayer={(newState) => this.updatePlayers(newState)}
+              updateGame={(u) => this.updateGame(u)}
+              updateFlow={(g,s)=>this.updateFlow(g,s)}>
+            </AtributeScreen>
+          );
+        } 
+        if(GS == states.WAITING_FOR_ACTION){
+          return(
+            <AtributeScreen
+              onScreenClick={()=>{this.updateFlow(states.SPIN_NUMBER_OF_SQUARES,screen.ROULETTE)}}
+              gameStats={this.state} 
+              updatePlayer={(newState) => this.updatePlayers(newState)}
+              updateGame={(u) => this.updateGame(u)}
+              updateFlow={(g,s)=>this.updateFlow(g,s)}>
+            </AtributeScreen>
+          )
+        } else {
+          return(
+            <AtributeScreen
+              gameStats={this.state} 
+              updatePlayer={(newState) => this.updatePlayers(newState)}
+              updateGame={(u) => this.updateGame(u)}
+              updateFlow={(g,s)=>this.updateFlow(g,s)}>
+            </AtributeScreen>
+          )
+        }
+      case screen.ROULETTE:
+        if(GS == states.SPIN_GET_ATRIBUTES){
+          return (
+            <Roulette gameStats={this.state} onSpinEnd={(n) => {this._getInitialAtributes(n)}}></Roulette>
+          );
+        }
+        if(GS == states.SPIN_NUMBER_OF_SQUARES){ 
+          return(
+            <Roulette gameStats={this.state} onSpinEnd={(n) => {this._advanceSquares(n)}} lockOnSpinEnd={true}></Roulette>
+          );
+        }
+        break;
+      case screen.CARD:
         return (
-          <AtributeScreen 
-            gameStats={this.state} 
-            updatePlayer={(newState) => this.updatePlayer(newState)}
-            updateGame={(newState) => this.updateGame(newState)}>
-          </AtributeScreen>
+          <Card updateFlow={(g,s)=>{this.updateFlow(g,s)}} gameStats={this.state} updateGame={(u) => {this.updateGame(u)}}></Card>
+        );
+      case screen.RUN_OUT_OF:
+        return(
+          <PopupRunOutOf onSolve={(att)=>{this.onRunOutOfSolve(att)}} gameStats={this.state} updateGame={(u) => {this.updateGame(u)}}></PopupRunOutOf>
+        );
+      case screen.END:
+        return(
+          <View>
+            <Text>Você venceu o jogo!</Text>
+          </View>
         );
       default:
         return(
           <View>
-            <Text>Tela não encontrada...</Text>
+            <Text>Tela não implementada...</Text>
           </View>
         )
     }
   }
 }
-/*
-  _countVotes(){
-    let players = this.state.gameStats.players;
-    let votes = [0,0,0];
-    for(var i=0; i < players.length; i++){
-      if (players[i] != null){
-        if(players[i].vote == false){
-          votes[0]++;
-        } 
-        if(players[i].vote == true){
-          votes[1]++;
-        }
-        if(players[i].vote == null){
-          votes[2]++;
-        }
-      }
-    }
-    return votes;
-  }*/
+
+let forceonce = true;
+const atts = [{"id":1,"name":"strength"},
+{"id":2,"name":"bravery"},
+{"id":3,"name":"friendship"},
+{"id":4,"name":"wisdom"},]    
+
+const rol = () => {return Math.floor(Math.random()*6+1);} // random between 1-6
+const isNull = (x) => {return x === null}; 
+const hasNullEl = (a) => {return a.filter(isNull).length > 0};
+const fillAtts = (pl,a) => {
+  for(var i=0;i<atts.length;i++){
+    pl[atts[i]["name"]]=a[i];
+}return pl}
+
+const nextNullAtt = (pl) =>{
+  for(let att of atts){
+    if(isNull(pl[att["name"]]))
+      return att["name"];
+  }
+}
+const logAtts = (pl) =>{
+  for(att of atts){
+      console.log(`${att['name']}:${pl[att['name']]}`);   
+  }
+}
+const wait = (t,f) =>{
+  setTimeout(()=>{f},1000*t);
+}
+
+const attsToArray = (pl) =>{
+  let myatts=[];
+  for(var att of atts){
+      myatts.push(pl[att["name"]])
+  }
+  return myatts;    
+}
+const createPlayer = (cid) => {
+  let a=[],pl=_NEW_PLAYER;
+  for(var i=0;i<atts.length;i++){
+      a[i] = i === cid-1 ? 6 : null 
+  }    
+  _NEW_PLAYER['classId'] = cid;
+  return fillAtts(pl,a);
+}
+const delay = t => new Promise(resolve => setTimeout(resolve, t));
+
+const logState = (s) =>{
+  let l;
+  switch(s){
+    case states.HALT: 
+      l = "HALT";
+      break;
+    case states.CHOOSING_CLASS: 
+      l = "CHOOSING_CLASS";
+      break;
+    case states.CHOOSING_ROOM: 
+      l = "CHOOSING_ROOM";
+      break;
+    case states.STARTING_GAME: 
+      l = "STARTING_GAME";
+      break;
+    case states.SPIN_GET_ATRIBUTES: 
+      l = "SPIN_GET_ATRIBUTES";
+      break;
+    case states.WAITING_FOR_ACTION: 
+      l = "WAITING_FOR_ACTION";
+      break;
+    case states.SPIN_NUMBER_OF_SQUARES: 
+      l = "SPIN_NUMBER_OF_SQUARES";
+      break;
+    case states.SPIN_PROBABILITY_CARD:
+      l = "SPIN_PROBABILITY_CARD"; 
+      break;
+    case states.SPINNING:
+      l = "SPINNING";
+      break;
+    case states.REVEAL_SPIN_RESULT:
+      l = "REVEAL_SPIN_RESULT";
+      break;
+    case states.CARD_CLOSED:
+        l = "CARD_CLOSED";
+        break;
+    case states.CARD_OPENED:
+        l = "CARD_OPENED";
+        break;
+    case states.VOTING:
+        l = "VOTING";
+        break;
+    case states.VOTE_END_AGREE:
+        l = "VOTE_END_AGREE";
+        break;
+    case states.VOTE_END_DISAGREE:
+        l = "VOTE_END_DISAGREE";
+        break;
+    case states.GAME_ENDING:
+        l = "GAME_ENDING";
+        break;
+    default:
+        l = "UNDEFINED STATE...";
+        break;   
+  }
+  //console.log(l);
+  return l;
+}
+const logScr = (scr) =>
+{
+  let l;
+  switch(scr){
+    case screen.CHOOSE_ROOM: 
+      l = "CHOOSE_ROOM";
+      break;
+    case screen.CHOOSE_CLASS: 
+      l = "CHOOSE_CLASS";
+      break;
+    case screen.ATRIBUTE_SCREEN: 
+      l = "ATRIBUTE_SCREEN";
+      break;
+    case screen.ROULETTE: 
+      l = "ROULETTE";
+      break;
+    case screen.CARD: 
+      l = "CARD";
+      break;
+    case screen.END:
+      l = "END";
+      break;
+    default:
+      l = "UNDEFINED SCREEN";
+      break;
+  }
+  console.log(l)
+}
+/*ar = [rol(),rol(),rol(),rol()];
+
+player = {};
+player = fillAtts(player,ar)
+/*for(att of atts){
+    player[att["name"]]=rol()
+};
+myatts=[];
+for(att of atts){
+    myatts.push(player[att["name"]])
+};
+
+console.log(player);
+console.log(ar);*/
+
+// Ingessão de dependência 
+// Inversão de Controle
