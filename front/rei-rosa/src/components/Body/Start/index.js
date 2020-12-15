@@ -8,7 +8,7 @@ export default class Start extends React.Component {
     render() {
         return (
             <Container>
-                <Button sync={this.props.sync} onClick={this.props.handleSynchronization} />
+                <Button sync={this.props.sync} onClick={this.props.handleSynchronization} started={this.props.started} />
             </Container>
         );
     }

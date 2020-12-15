@@ -6,7 +6,7 @@ import Start from './Start';
 
 export default class Body extends React.Component {
 
-    state = { sync: false, anyRoomClicked: false }
+    state = { sync: false, anyRoomClicked: false, start: false }
 
     render() {
         return (
@@ -15,30 +15,35 @@ export default class Body extends React.Component {
                 <Room superHandleClick={this.handleRoomClick}
                     sync={this.state.sync}
                     clicked={this.state.anyRoomClicked}
-                    onSynchronize={this.handleSynchronization}>
+                >
                 </Room>
                 <Start sync={this.state.sync}
                     handleSynchronization={this.handleSynchronization}
-                    confirm={this.confirmSynchronization}>
+                    started={this.state.start}
+                >
                 </Start>
             </>
         );
     }
 
-    handleSynchronization = async () => {
+    handleSynchronization = () => {
+        if (this.state.start)
+            return;
+
+        const start = window.confirm(this.state.sync ?
+            'Gostaria de iniciar o jogo? Salas com menos de 2 jogadores serão automaticamente excluídas.' :
+            'Gostaria de Sincronizar? Os jogadores poderão ver as salas e não será possível adicionar novas.');
         const state = this.state;
-        if (!state.anyRoomClicked) {
-            window.alert('Por favor informe a quantidade de salas antes de sincronizar.');
-        } else {
-            state.sync = window.confirm('Tem certeza que quer sincronizar? Não será mais possível adicionar novas salas.');
-            if (state.sync) {
-                await fetch('http://localhost:3001/sync', { method: 'POST' });
-                this.setState(state);
-            }
-        }
+        state.start = this.state.sync === true && start === true;
+        state.sync = true;
+        const route = state.start ? 'start' : 'sync';
+        fetch(`http://localhost:3001/${route}`, { method: 'POST'});
+        this.setState(state);
     }
 
     handleRoomClick = () => {
-        this.setState({ sync: this.state.sync, anyRoomClicked: true });
+        const state = this.state;
+        state.anyRoomClicked = true;
+        this.setState(state);
     }
 }

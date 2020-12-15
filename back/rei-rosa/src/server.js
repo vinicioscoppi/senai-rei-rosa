@@ -19,14 +19,15 @@ app.listen(config.PORT, () => {
 
 config.dbClient.on('connect', () => {
     console.log('> Connected to Redis/Memurai database.');
-    config.dbClient.flushallAsync()
-        .then(() => config._setupRooms())
-        .then(roomsInMemory => config.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', roomsInMemory))
-        .then(() => config.dbClient.setAsync('SYNC', false))
-        .then(() => config.dbClient.setAsync('GAME_STARTED', false));
+    config.restartGame();
 });
 
 app.use(config.bodyParser.json());
+
+//reset game state
+app.get('/flush', (req, res) => {
+    config.restartGame();
+});
 
 //get N rooms
 app.get('/room/:numberOfRooms', (req, res) => {
@@ -48,7 +49,6 @@ app.get('/room/:numberOfRooms', (req, res) => {
 //post a user into a room
 // { user: 'userId', roomIndex: number }
 app.post('/user', (req, res) => {
-
 
     if (isNaN(req.body.roomIndex))
         res.status(400).send(`Id da sala não é um numero`);
@@ -135,6 +135,8 @@ app.post('/start', (req, res) => {
             } else if (sync === 'true') {
                 multi.keys('room-*');
                 return multi.execAsync();
+            } else {
+                throw new Error('Não foi possível acessar o valor da chave SYNC');
             }
         })
         .then(keys => {
@@ -142,21 +144,31 @@ app.post('/start', (req, res) => {
             return multi.execAsync();
         })
         .then(rooms => {
-            const verifyRooms = rooms.map(room => JSON.parse(room));
-            var roomsToDelete = [];
+            const verifyRooms = rooms.map(room => {
+                const roomJson = JSON.parse(room);
+                return new Room(roomJson._idRoom);
+            });
+            const roomsToDelete = [];
 
-            verifyRooms.forEach((room) => { if (room._players.length < 2) roomsToDelete.push(room); });
+            verifyRooms.forEach((room) => { 
+                if (room._players.length < 2) {
+                    roomsToDelete.push(room); 
+                } else {
+                    room._gameRunning = true;
+                }
+            });
 
             if (roomsToDelete.length > 0) {
                 roomsToDelete.forEach(room => multi.del(room));
             }
-
-            return multi.execAsync();
+            verifyRooms.filter(room => room._gameRunning == true).forEach(room => multi.set(`room-${room._idRoom}`, JSON.stringify(room)));
+            
+            multi.execAsync();
         })
         .then(() => {
             config.dbClient.setAsync('GAME_STARTED', true);
-            res.sendStatus(200);
         })
+        .then(() => res.sendStatus(200))
         .catch(error => {
             console.error(error);
             res.sendStatus(500);
@@ -166,13 +178,7 @@ app.post('/start', (req, res) => {
 
 app.get('/gameStarted', (req, res) => {
     config.dbClient.getAsync('GAME_STARTED')
-        .then(started => {
-            if (started === 'false') {
-                res.send({ started: false });
-            } else if (started === 'true') {
-                res.send({ started: true });
-            }
-        })
+        .then(started => res.send({ started: started === 'true' }))
         .catch(error => {
             console.error(error);
             res.sendStatus(500);

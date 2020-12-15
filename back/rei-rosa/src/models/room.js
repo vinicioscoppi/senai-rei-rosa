@@ -1,10 +1,8 @@
-const Sticker = require('./sticker')
-
 module.exports = class Room {
-    constructor(sticker, idRoom) {
+    constructor(idRoom) {
         this._idRoom = idRoom;
         this._players = [];
-        this._sticker = sticker;
+        this._gameRunning = false;
     }
 
     getRoomsFromOneTo(number, dbClient) {
@@ -32,19 +30,19 @@ module.exports = class Room {
         this._players = player;
     }
 
-    get sticker() {
-        return this._sticker;
-    }
-
-    set sticker(sticker) {
-        this._sticker = sticker;
-    }
-
     get idRoom() {
         return this._idRoom;
     }
 
     set idRoom(idRoom) {
         this._idRoom = idRoom;
+    }
+
+    get gameRunning() {
+        return this._gameRunning;
+    }
+
+    set gameRunning(gameRunning) {
+        this._gameRunning = gameRunning;
     }
 }
