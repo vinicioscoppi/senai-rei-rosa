@@ -26,34 +26,40 @@ export class TeamAtributes extends Component
     render()
     {
         return(
-            <SafeAreaView>
-                <View style={styles.teamAtributes}>
-                    <Icon 
-                        style={styles.icons} 
-                        name={icons.FOOD} 
-                        size={30} 
-                        color={color.FOOD}/>
-                    <TeamAtributeBar 
-                        style={styles.foodBar} 
-                        title='Barra de Comida'
-                        time={3}
-                        icon={icons.FOOD}
-                        color={color.FOOD}
-                    ></TeamAtributeBar>
+            <SafeAreaView style={styles.teamAtributes}>
+                <View style={styles.teamAtributeView}>
+                    <View style={styles.iconView}>
+                        <Icon 
+                            style={styles.icons} 
+                            name={icons.FOOD} 
+                            size={30} 
+                            color={color.FOOD}/>
+                    </View>
+                   <View style={styles.barView}>
+                        <TeamAtributeBar 
+                            style={styles.foodBar}
+                            time={600}
+                            icon={icons.FOOD}
+                            color={color.FOOD}
+                        ></TeamAtributeBar>
+                    </View>
                 </View>
-                <View style={styles.teamAtributes}>
-                    <Icon 
-                        style={styles.icons} 
-                        name={icons.WATER} 
-                        size={30} 
-                        color={color.WATER} />
-                    <TeamAtributeBar 
-                        style={styles.waterBar} 
-                        title='Barra de Água'
-                        time={3}
-                        icon={icons.WATER}
-                        color={color.WATER}
-                    ></TeamAtributeBar>
+                <View style={styles.teamAtributeView}>
+                    <View style={styles.iconView}>
+                        <Icon 
+                            style={styles.icons} 
+                            name={icons.WATER} 
+                            size={30} 
+                            color={color.WATER} />
+                        </View>
+                    <View style={styles.barView}>
+                        <TeamAtributeBar 
+                            style={styles.waterBar}
+                            time={600}
+                            icon={icons.WATER}
+                            color={color.WATER}
+                        ></TeamAtributeBar>
+                    </View>
                 </View>
             </SafeAreaView>
         );

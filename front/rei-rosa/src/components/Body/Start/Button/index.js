@@ -3,7 +3,7 @@ import React from 'react';
 import { Container } from './styles';
 
 export default class Button extends React.Component {
-
+  
   render() {
     return (
       <Container style={this.props.sync === true && this.props.started === true ? defaultStyle :  syncedStyle}

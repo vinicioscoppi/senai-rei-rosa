@@ -1,35 +1,37 @@
 import React, { Component } from 'react';
-import { View, TouchableHighlight } from 'react-native';
+import { View, TouchableHighlight, TouchableWithoutFeedback} from 'react-native';
 import { styles } from './styles';
 import { color } from './../../enums/color';
+import { icons } from './../../enums/icons'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-export class VoteButtons extends Component {
+export default class VoteButtons extends Component {
     constructor(props) {
         super(props);
     }
     render() {
         return (
             <View style={styles.container}>
-                <TouchableHighlight
+                <TouchableHighlight 
                     style={styles.item}
                     underlayColor={color.DISAGREE}
                     activeOpacity={0.6}
-                    onPress={() => alert('Nope!')}>
+                    onPress={() => this.props.onDisagree()}
+                    disabled={this.props.disabled}>
                     <Icon
-                        name='close'
+                        name={icons.VOTE_DISAGREE}
                         size={50}
                         color={color.DISAGREE}
                     />
                 </TouchableHighlight>
-                <Separator />
-                <TouchableHighlight
+                <TouchableHighlight 
                     style={styles.item}
                     underlayColor={color.AGREE}
                     activeOpacity={0.6}
-                    onPress={() => alert('Ok!')}>
+                    onPress={() => this.props.onAgree()}
+                    disabled={this.props.disabled}>
                     <Icon
-                        name='check'
+                        name={icons.VOTE_AGREE}
                         size={50}
                         color={color.AGREE}
                     />
@@ -37,7 +39,4 @@ export class VoteButtons extends Component {
             </View>
         );
     }
-}
-function Separator() {
-    return <View style={styles.separator} />;
 }

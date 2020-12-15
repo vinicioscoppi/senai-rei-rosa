@@ -2,21 +2,13 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     container: {
+        flex:1,
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexBasis: 65,
-        margin: 20,
     },
     item: {
+        flex:0.5,
         justifyContent: 'center',
         alignItems: 'center',
-        flexBasis: 145,
-        margin: 5,
         borderWidth: 3,
     },
-    separator: {
-        margin: 5,
-    },
-
 });
