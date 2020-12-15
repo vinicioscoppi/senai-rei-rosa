@@ -19,14 +19,15 @@ app.listen(config.PORT, () => {
 
 config.dbClient.on('connect', () => {
     console.log('> Connected to Redis/Memurai database.');
-    config.dbClient.flushallAsync()
-        .then(() => config._setupRooms())
-        .then(roomsInMemory => config.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', roomsInMemory))
-        .then(() => config.dbClient.setAsync('SYNC', false))
-        .then(() => config.dbClient.setAsync('GAME_STARTED', false));
+    config.restartGame();
 });
 
 app.use(config.bodyParser.json());
+
+//reset game state
+app.get('/flush', (req, res) => {
+    config.restartGame();
+});
 
 //get N rooms
 app.get('/room/:numberOfRooms', (req, res) => {

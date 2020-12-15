@@ -25,4 +25,13 @@ module.exports = class Config {
             return 10;
         }).catch(err => { console.error(err); return 0; });
     }
+
+    restartGame() {
+        this.dbClient.flushallAsync()
+        .then(() => this._setupRooms())
+        .then(roomsInMemory => this.dbClient.setAsync('CURRENT_NUMBER_OF_ROOMS', roomsInMemory))
+        .then(() => this.dbClient.setAsync('SYNC', false))
+        .then(() => this.dbClient.setAsync('GAME_STARTED', false))
+        .then(() => console.log('> Game (re)started.'));
+    }
 }

@@ -36,6 +36,8 @@ export default class Body extends React.Component {
         const state = this.state;
         state.start = this.state.sync === true && start === true;
         state.sync = true;
+        const route = state.start ? 'start' : 'sync';
+        fetch(`http://localhost:3001/${route}`, { method: 'POST'});
         this.setState(state);
     }
 
