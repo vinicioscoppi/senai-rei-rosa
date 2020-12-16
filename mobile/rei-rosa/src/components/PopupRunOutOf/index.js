@@ -8,10 +8,13 @@ export class PopupRunOutOf extends Component {
   constructor(props) {
     super(props);
   }
+  componentDidMount(){
+    console.warn("POPUP MOUNTED!!!")
+  }
   render() {
-    const GS = this.props.gameStats;
-    let atribute = getRunOutAtribute();
-    const refillSquare = utils.getRefillSquare(GS,atribute);
+    const G = this.props.gameStats;
+    const atribute = utils.getRunOutAtribute(G);
+    const refillSquare = utils.getRefillSquare(G,atribute);
     return (
       <View>
         <Modal visible={true} animationType={'fade'}>

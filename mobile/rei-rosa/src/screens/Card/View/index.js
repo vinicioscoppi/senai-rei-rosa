@@ -160,13 +160,10 @@ class CardChoice extends Component{
         this.setState({reveal:true});
     }
     confirmVotes(){
-        console.log("CONFIRMING VOTES...")
         this.revealConsequence();
         const myChoice = findOptionByVote(this.props.card,this.state.vote)
-        console.log(`NewGS:${this.props.gameStats}`)
         let u = applyAllConsequences(myChoice['what'],this.props.gameStats)
-        console.log(`NewGS:${u}`)
-        this.props.onSolve();
+        this.props.onSolve(u);
     }
     render(){
         const card = this.props.card;
@@ -187,7 +184,7 @@ class CardChoice extends Component{
                     <TextView text={headerText}></TextView>
                 </View>
                 <View style={stylesChoice.LinkView}>
-                    <TouchableHighlight style={{flex:1,justifyContent:"center"}} onPress={() => this.props.onLinkClick()}>
+                    <TouchableHighlight style={{flex:1,justifyContent:"center"}} disabled={!this.state.hideTimer} onPress={() => this.props.onLinkClick()}>
                         <Text style={[stylesChoice.Link]}>Voltar para a tela de atributos</Text>
                     </TouchableHighlight>
                 </View>
@@ -231,9 +228,7 @@ class CardProbability extends Component{
     }
     solveCard(n){
         let myConsequence = findConsequenceByNumber(this.props.card,n);
-        console.log(`NewGS:${this.props.gameStats}`)
         let updatedGame = applyAllConsequences(myConsequence['what'],this.props.gameStats)
-        console.log(`NewGS:${updatedGame}`)
         this.props.onSolve(updatedGame)
     }
     render(){
@@ -275,51 +270,43 @@ export default class Card extends Component
     constructor(props){
         super(props);
         const G = this.props.gameStats;
-        /*let k = 6;
-        if(k>=DECK.length) console.error(`O DEQUE NÃO TEM ${k} CARTAS`);
-        console.log("APRESENTANDO CARTA DE ID="+DECK[k]['id'])
-        this.state={
-            k:k,
-            card:DECK[k],
-            open:false,
-            biome:biomes[DECK[k]['biome']],
-            solved:false,
-        }*/
-        const myDECK = utils.getDeck(G.square);
-        const k = 6 //Math.floor(Math.random() * myDECK.length);
-        const card = myDECK[k];
-        console.log("APRESENTANDO CARTA DE ID="+card['id'])
-        this.state={
-            k:k,
-            card:card,
-            open:false,
-            solved:false,
-        }
-        this.props.updateGame({card:myDECK[k],gameState:states.CARD_CLOSED});
-        //this._viewCards();
-    }
-    _viewCards(){
-        /*if(this.state.k!=DECK.length-1){
-            setTimeout(()=>{
-                const biomes = ["BIOME_FOREST","BIOME_DESERT","BIOME_MOUNTAIN"];
-                this.setState({
-                    k:this.state.k+1,
-                    card:DECK[this.state.k+1],
-                    open:true,
-                    biome:biomes[DECK[this.state.k+1]['biome']],
-                });
-                this._viewCards()
-            },200)
+        const deckIds = this.props.deckIds;
+        const i = G.cardIndex;
+        const myDECK = utils.getDeck(G,deckIds);
+
+        let card = G.card === null ? myDECK[i%myDECK.length] : card = G.card;
+        
+            this.state={
+                k:i,
+                card:card,
+                open:G.gameState == states.CARD_OPENED,
+                solved:false,
+            }
+        if(G.gameState !== states.CARD_OPENED){
+            this.state={
+                k:i,
+                card:card,
+                open:G.gameState == states.CARD_OPENED,
+                solved:false,
+            }
+            this.props.updateGame({"card":card,"gameState":states.CARD_CLOSED,"cardIndex":(i+1)%deckIds.length});
         } else {
-            return false;
-        }*/
+            this.state={
+                k:i,
+                card:G.card,
+                open:G.gameState == states.CARD_OPENED,
+                solved:false,
+            }
+        }
     }
     solveCard(u){
         this.setState({solved:true});
         utils.delay(2000).then(()=>{
-            const update = {...u,...{card:null}}
+            const ug = {...u,...{card:null,gameState:states.WAITING_FOR_ACTION}};
+            const up = {screen:screen.ATRIBUTE_SCREEN};
+            let update = {...u,...ug};
+            update['players'] = utils.getMyUpdatedPlayer(u,up);
             this.props.updateGame(update);
-            this.props.updateFlow(states.WAITING_FOR_ACTION,screen.ATRIBUTE_SCREEN);
         })
     }
     gotoAttScr(){
@@ -333,13 +320,13 @@ export default class Card extends Component
         this.props.updateGame({gameState:states.CARD_OPENED});
     }
     _voteIsUnanimous(){
-        // this is true just because 1Player has no others to find
+        // this is hardcoded true for now just because 1Player has no othervotes to find
         return true;
     }
     render()
     {
         const G = this.props.gameStats;
-        const biome = utils.getMyBiome(G.square);
+        const biome = utils.getMyBiome(G);
         const card = this.state.card;
         const myColor = utils.getCardColor(card);
         if(this.state.open){
@@ -348,7 +335,8 @@ export default class Card extends Component
                     return(
                     <CardEffect onLinkClick={() => this.gotoAttScr()} 
                         card={this.state.card} 
-                        onSolve={()=>{this.solveCard()}}
+                        onSolve={(u)=>{this.solveCard(u)}}
+                        onLinkClick={()=>{this.props.updateFlow(G.gameState,screen.ATRIBUTE_SCREEN)}}
                     ></CardEffect>);
                 case TYPE['CHOICE']:
                     return(<CardChoice onLinkClick={() => this.gotoAttScr()} 

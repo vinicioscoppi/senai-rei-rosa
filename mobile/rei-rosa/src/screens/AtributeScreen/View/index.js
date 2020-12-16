@@ -33,6 +33,10 @@ export default class AtributeScreen extends Component
     return att_changed;
   }
   updateStats(){
+    if(this.props.disableToggle){
+      return false;
+    }
+
     const G = this.props.gameStats;
 
     // object with updates 
@@ -43,9 +47,13 @@ export default class AtributeScreen extends Component
       wisdom: this.state.wisdom
     };
 
-    const NEW_PLAYERS = utils.getMyUpdatedPlayer(G,myAttsUpdate);
-    this.props.updateGame({card:null,players:NEW_PLAYERS});
-    this.props.updateFlow(states.WAITING_FOR_ACTION,screen.ATRIBUTE_SCREEN);
+    //const NEW_PLAYERS = utils.getMyUpdatedPlayer(G,myAttsUpdate);
+    console.log("SETTING CARD TO NULL")
+    const u = utils.getMyUpdatedGame(
+      G,{card:null,gameState:states.WAITING_FOR_ACTION},
+      {...myAttsUpdate,screen:screen.ATRIBUTE_SCREEN});
+
+    this.props.updateGame(u);
   }
   restoreStats(){
     const myStats = utils.findMyPlayer(this.props.gameStats);

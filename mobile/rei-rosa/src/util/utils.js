@@ -163,6 +163,13 @@ export const getMyUpdatedPlayer = (G,u) => {
     return gamePlayers;
 }
 
+export const getMyUpdatedGame = (G,ug,up) => {
+  pls = getMyUpdatedPlayer(G,up);
+  u = {...G,...ug};
+  u['players'] = pls;
+  return u;
+}
+
 export const findTurn = (G) => {
     let validPIds = G['players'].filter((el)=>{
         return el!=null
@@ -170,10 +177,10 @@ export const findTurn = (G) => {
         return el['classId'];
     })
 
-    if(this.state.turn === null){
+    if(G.turn === null){
         return validPIds[0];
     } else {
-        return this.state.turn++%validPIds.length;
+        return G.turn++%validPIds.length;
     }
 }
 
@@ -194,30 +201,30 @@ export const getMyClassname = (G) => {
     )?.name
 }
 
-export const getMyBiome = (n) => {
+export const getMyBiome = (G) => {
+  if(G.card !== null){
+    console.log(G);
+    return CONFIG.BIOMES.find((el)=>{return el['id'] === G['card']['biome'];});
+  }
+  const n = G.square;
   const M = CONFIG.BIOMES.filter((b)=>{
     return b['squares'].includes(n);
   })[0];
-  if(M.length>1)
+  if(M?.length>1)
     console.error(`SQUARE NUMBER ${n} MUST BELONG TO ONLY ONE BIOME IN CONFIG FILE.\nCURRENTLY IT BELONGS TO BIOMES WITH IDS ${M.map((b)=>{return b['id']})}`);
-  if(M.length==0)
+  if(M?.length==0)
     console.error(`NO BIOME CONTAINS SQUARE NUMBER '${n}' in SQUARES ATRIBUTE`);
   return M;
 }
 
-export const getDeck = (n) => {
-  const biome = getMyBiome(n);
-  switch(biome['id']){
-    case 1:
-      return DECK_FOREST;
-    case 2:
-      return DECK_DESERT;
-    case 3:
-      return DECK_MOUNTAIN;
-    default:
-      console.error(`utils.getDeck => Bioma não encontrado: '${biome['id']}'\n retornei null :c`);
-      return null;
-  }
+export const getDeck = (G,ids) => {
+  console.log(ids);
+  const biome = getMyBiome(G);
+  return DECK.filter((el)=>{
+    return el['biome'] === biome['id'];
+  }).filter((el)=>{
+    return ids.includes(el['id']);
+  })
 }
 
 export const getCardColor = (c) => {
@@ -226,7 +233,7 @@ export const getCardColor = (c) => {
   })['color']
 }
 
-export const shuffleArray = (a)=>{
+export const shuffleArray = (a) => {
   for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
@@ -246,12 +253,11 @@ export const nomeEmPortugues = (nome) =>{
     case'friendship':return'amizade';
     case'bravery':return'coragem';
     case'wisdom':return'sabedoria';
-    default:
-      return 'PARECE QUE ESSE NOME NÃO TEM TRADUÇÃO EM PORTUGUÊS';
+    default:return 'PARECE QUE ESSE NOME NÃO TEM TRADUÇÃO EM PORTUGUÊS';
   }
 }
 export const getRefillSquare = (G,att) =>{
-  const n = G.squares;
+  const n = G['square'];
   const s = att['refillSquares'];
   const f = s.filter((el)=>{
     return el <= n;
@@ -259,9 +265,9 @@ export const getRefillSquare = (G,att) =>{
   return f[f.length-1]
 }
 
-export const getRunOutAtribute = () => {
+export const getRunOutAtribute = (G) => {
   return CONFIG.TEAM_ATRIBUTES.filter((el)=> {
-    return GS[el['name']] <= 0;
+    return G[el['name']] <= 0;
   })[0];
 }
 
@@ -275,6 +281,10 @@ export const findMyNullAtributes = (myPlayer) => {
   return CONFIG.PLAYER_ATRIBUTES.filter((el)=>{
     return myPlayer?.[el?.['name']] == null
   })
+}
+
+export const isMyTurn = (G,myPlayer) => {
+  return (G['turn']===findMyPlayerIndex(G,myPlayer));
 }
 /*
 export const findMyFirstNullAtribute = (me) =>{

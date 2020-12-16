@@ -32,31 +32,32 @@ import {screen} from './enums/screen';
 import { states } from './enums/states';
 import * as CONFIG from './config/config';
 import * as utils from './util/utils';
+
+import {DECK} from './config/cardConfig';
 import { PopupRunOutOf } from './components/PopupRunOutOf';
 export default class App extends Component {
   constructor(props){
     super(props);
-    //_1P_ROOM_NEWGAME.screen = screen.CHOOSE_ROOM;
-    const testing = true;
+    const testing = false;
     const initRoom = testing ? 
       _1P_ROOMS[_1P_ROOMS.length-1] : _1P_ROOMS[0]
-    this.state = _1P_MODE ? initRoom : this.startGame();
-    //console.log(_1P_ROOMS.length)
-    console.log("\n \n \n \n \n \n \n");
-    
-    //console.log(_1P_ROOM_NEWGAME);
+    this.state = initRoom;
+    console.log("\n \n \n \n \n \n \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    this.setDeck();
   }
   componentDidMount(){
     clearInterval(this.atributeTimers);
-    if(this.state.gameRunning)
+    if(this.state.gameRunning){
       this.setAtributeTimers();
+      this.setDeck();
+    }
   }
   setAtributeTimers(){
     this.atributeTimers = setInterval(()=>{
       let u = {};
       let increment; 
       for(let att of CONFIG.TEAM_ATRIBUTES){
-        increment = -1*CONFIG.TIMER_UPDATE_TIME/1000*att.points/att.time;
+        increment = -1*CONFIG.TIMER_UPDATE_TIME*att.points/att.time;
         u[att['name']]=this.state[att['name']]+increment;
         if(u[att['name']]<=0){
           this.runOutOf(att);
@@ -65,12 +66,18 @@ export default class App extends Component {
       this.updateGame(u);
     },CONFIG.TIMER_UPDATE_TIME)
   }
+  setDeck(){
+    this.deckIds = utils.shuffleArray(
+      DECK.map((el)=>{return el['id']})
+    );
+    console.log("DECK READY");
+  }
   runOutOf(att){
-    let u = {};
-    u[att['name']]=0;
-    u['gameState'] = this.state.gameState;
-    u['players'] = this.getMyUpdatedPlayer({screen:screen.RUN_OUT_OF})
-    this.screenBeforePopup = utils.getMyScreen(this.state);
+    if(utils.getMyScreen(this.state)!==screen.RUN_OUT_OF){
+      this.screenBeforePopup = utils.getMyScreen(this.state);
+    }
+    let u = {}; u[att['name']]=0; u['gameState'] = this.state.gameState;
+    u['players'] = utils.getMyUpdatedPlayer(this.state, {screen:screen.RUN_OUT_OF});
     clearInterval(this.atributeTimers);
     this.updateGame(u);
   }
@@ -106,7 +113,9 @@ export default class App extends Component {
     return gamePlayers;
   }
   updateGame(u){
+    console.log("UPDATING GAME")
     let myUpdatedGame = {...this.state,...u}
+    console.log(myUpdatedGame);
     if(this.state.gameRunning == false){
       this.warnAllPlayers();
     }
@@ -153,7 +162,7 @@ export default class App extends Component {
         ...createPlayer(myClass),
         ...{screen:screen.ATRIBUTE_SCREEN}})
       )
-      //console.log("STARTING 1 PLAYER MODE...\nHAVE FUN :)")
+      console.log("STARTING 1 PLAYER MODE...\nHAVE FUN :)")
     } else{
       //console.log("MULTIPLAYER MODE STILL NOT WORKING :C");
       return null;
@@ -184,14 +193,13 @@ export default class App extends Component {
     }
 
     update['screen'] = newScr;
-    this.updateGame({players:this.getMyUpdatedPlayer(update),gameState:newGS});
+    this.updateGame({players:this.getMyUpdatedPlayer(update),gameState:newGS,turn:utils.findTurn(this.state)});
   }
 
   _advanceSquares(n){
     const newSquare = this.state.square + n;
     let newGState, newScreen;
     ///... check if there is a card
-    delay(2000).then(()=>{
       if(CONFIG.CARD_SQUARES.includes(newSquare)){
         newScreen = screen.CARD;
         newGState = states.CARD_CLOSED;
@@ -199,53 +207,34 @@ export default class App extends Component {
         newScreen = screen.ATRIBUTE_SCREEN;
         newGState = states.WAITING_FOR_ACTION;
       }
-    }).then(()=>{
-      this.updateGame({
-        square:newSquare,
+      delay(1500).then(()=>{
+        this.updateGame({
+          square:newSquare,
+        })
+        this.updateFlow(newGState,newScreen);
       })
       
-    }).then(()=>{
-      delay(2000).then(()=>{
-        this.updateFlow(newGState,newScreen)
-      })
-    })
   }
 
   componentDidUpdate(){
+    console.log("COMPONENT UPDATED")
     const G = this.state;
     const GS = G.gameState;
     const CUR_SCR = this.getMyScreen();
     if(G.square > CONFIG.BOARD_SIZE && GS != states.END){
       this.updateFlow(states.END,screen.END);
+      clearInterval(this.atributeTimers);
       console.log("YOU WON THE GAME");
     }
-
-    // Start game
-    /*  switch(GS){
-        case states.STARTING_GAME:       
-          delay(10000).then(() => {
-            //this.updateFlow(states.SPIN_GET_ATRIBUTES,screen.ATRIBUTE_SCREEN);
-          });
-
-          break;
-        case states.SPIN_GET_ATRIBUTES:
-          //console.log("GETTING ATRIBUTES");
-          break;
-        case states.WAITING_FOR_ACTION:
-          if(CUR_SCR == screen.ATRIBUTE_SCREEN){
-            delay(5000).then(()=>{
-
-              this.updateFlow(states.SPIN_NUMBER_OF_SQUARES,screen.ROULETTE)
-
-            });
-          }
-          break;
-      }*/
+    if(this.atributeTimers === undefined || this.atributeTimers === null && this.state.gameRunning){
+      this.setAtributeTimers();
+    }
   }
   render() {
-    console.info(this.state);
+    console.log(this.state)
     const G = this.state;
-    const GS = G.gameState
+    const GS = G.gameState;
+    logState(GS);
     switch(this.getMyScreen()){  
       case screen.CHOOSE_ROOM:
         return (
@@ -265,7 +254,8 @@ export default class App extends Component {
         if(GS == states.STARTING_GAME){
           return (
             <AtributeScreen 
-              onScreenClick={()=>{this.updateFlow(states.SPIN_GET_ATRIBUTES,screen.ROULETTE);}}
+              disabled={true}
+              onScreenClick={()=>{this.updateFlow(states.SPIN_GET_ATRIBUTES,screen.ROULETTE)}}
               gameStats={this.state} 
               updatePlayer={(newState) => this.updatePlayers(newState)}
               updateGame={(u) => this.updateGame(u)}
@@ -279,9 +269,20 @@ export default class App extends Component {
               onScreenClick={()=>{this.updateFlow(states.SPIN_NUMBER_OF_SQUARES,screen.ROULETTE)}}
               gameStats={this.state} 
               updatePlayer={(newState) => this.updatePlayers(newState)}
-              updateGame={(u) => this.updateGame(u)}
+              updateGame={(u)=>this.updateGame(u)}
               updateFlow={(g,s)=>this.updateFlow(g,s)}>
             </AtributeScreen>
+          )
+        } 
+        if(GS == states.CARD_OPENED){
+          return (
+          <AtributeScreen
+            onScreenClick={()=>{this.updateFlow(states.CARD_OPENED,screen.CARD);}}
+            gameStats={this.state} 
+            updatePlayer={(newState) => this.updatePlayers(newState)}
+            updateGame={(u)=>this.updateGame(u)}
+            updateFlow={(g,s)=>this.updateFlow(g,s)}>
+          </AtributeScreen>
           )
         } else {
           return(
@@ -307,7 +308,12 @@ export default class App extends Component {
         break;
       case screen.CARD:
         return (
-          <Card updateFlow={(g,s)=>{this.updateFlow(g,s)}} gameStats={this.state} updateGame={(u) => {this.updateGame(u)}}></Card>
+          <Card 
+            deckIds={this.deckIds} 
+            updateFlow={(g,s)=>{this.updateFlow(g,s)}} 
+            gameStats={this.state} 
+            updateGame={(u) => {this.updateGame(u)}}>
+          </Card>
         );
       case screen.RUN_OUT_OF:
         return(
@@ -430,8 +436,8 @@ const logState = (s) =>{
         l = "UNDEFINED STATE...";
         break;   
   }
-  //console.log(l);
-  return l;
+  console.log(l);
+  //return l;
 }
 const logScr = (scr) =>
 {

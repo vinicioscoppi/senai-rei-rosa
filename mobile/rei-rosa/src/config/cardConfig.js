@@ -111,7 +111,7 @@ const C5_MISSION1 = {
 }
 
 const EXAMPLE_CARD_5 = {
-    "id":1,
+    "id":5,
     "type":TYPE.EFFECT,
     "header":"Um leão surge na trilha, e uma flauta está no chão.",
     "footer":"Cada um: ganha 1 de amizade.",
@@ -188,7 +188,7 @@ const C12_MISSION1 = {
 }
 
 const EXAMPLE_CARD_12 = {
-    "id":1,
+    "id":12,
     "type":TYPE.EFFECT,
     "header":"Vocês avistaram uma cachoeira!",
     "footer":"",

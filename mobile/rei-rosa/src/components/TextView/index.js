@@ -19,14 +19,7 @@ export class TextView extends Component
         const G = this.props.gameStats;
         
         const GS = G?.gameState;
-        //console.log(G);
-        
-        
-        //if(G.room == null){
-        //    return "Escolha sua sala";
-        //} 
-        //return "";
-        //const MY_CLASS = this.props.gameStats.myClass;
+  
         const MY_PLAYER = utils.findMyPlayer(G);
         
         const CUR_SCREEN = utils.getMyScreen(G);
@@ -36,25 +29,20 @@ export class TextView extends Component
         MY_CLASSNAME = utils.nomeEmPortugues(MY_CLASSNAME)
         
         switch(CUR_SCREEN){
-            
-            
             case screen.CHOOSE_ROOM:
-                //console.log(S);
-                //text={CUR_CHOICE == null ? 'Escolha sua classe' : 'Você escolheu o ' + CUR_CLASSNAME}
                 return `Escolha sua sala`;
             case screen.CHOOSE_CLASS:
                 const myClassname = CONFIG.PLAYER_CLASSES.find((el)=>{return el?.['id'] === S.currentChoice})?.['name']
                 return `${S.currentChoice?`Você escolheu o ${utils.nomeEmPortugues(myClassname)}`:`Escolha sua classe`}`;
             case screen.ROULETTE:
-                
                 switch(GS){
                     case states.SPIN_GET_ATRIBUTES:
                         const nextNullAtt = utils.findMyNextNullAtribute(MY_PLAYER);
                         const nextNullAttText = utils.nomeEmPortugues(nextNullAtt?.['name'])
-                        return `Toque para obter seus pontos \n iniciais de ${nextNullAttText}`;
+                        return `Toque na roleta para obter seus pontos \n iniciais de ${nextNullAttText}`;
 
                     case states.SPIN_NUMBER_OF_SQUARES:
-                        return "Toque para andar as casas";
+                        return "Toque na roleta para andar as casas";
                     case states.WAITING_FOR_ACTION:
                         return `Avance ${SS.selectedItem} casas`; 
                     default:
@@ -66,13 +54,20 @@ export class TextView extends Component
                     case states.STARTING_GAME:
                         return `Você é o ${MY_CLASSNAME}!\n\n Toque aqui para receber seus atributos`;
                     case states.WAITING_FOR_ACTION:
-                        return `É a vez do ${MY_CLASSNAME.toLowerCase()} andar o peão da equipe!`;
+                        console.log(`Turn:${G['turn']} ClassId:${MY_PLAYER['classId']}`)
+                        if(utils.isMyTurn(G,MY_PLAYER)){
+                            return `É a sua vez! \nToque para andar as casas`;
+                        } else {
+                            return `É a vez do ${MY_CLASSNAME.toLowerCase()} andar o peão da equipe!....`;
+                        } 
                     case states.SPIN_NUMBER_OF_SQUARES:
                         return `Ande para a casa ${GS.square}`; 
                     case states.CARD_OPENED:
-                        if(G['card']['type'] == 0)
+                        /*if(G['card']['type'] == 0)
                             return `${G['card']['missions'][0]['text']}`
-                        return `Discuta com seus colega como resolver a carta`;
+                        if(G['card']['type'] == 1)
+                            return `Toque para voltar à carta`;*/
+                        return `Discuta com seus colegas quem irá resolver o desafio!\n\n Toque aqui para ver a carta`;
                 }
                 return "Não implementado ainda...";
             case screen.CARD:
