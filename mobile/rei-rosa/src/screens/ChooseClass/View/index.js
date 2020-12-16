@@ -13,7 +13,8 @@ import { NUMBER_OF_COLUMNS } from './../../../config/chooseClassConfig';
 import { styles } from './styles';
 import { TextView } from './../../../components/TextView/index';
 import { color } from './../../../enums/color';
-
+import {screen} from './../../../enums/screen';
+import { states } from './../../../enums/states';
 export default class ChooseClass extends Component {
     constructor(props){
         super(props);
@@ -34,13 +35,12 @@ export default class ChooseClass extends Component {
                 currentChoice:classId,
                 alreadyChosen:this._classAlreadyChosen(classId)
             });
-            //alert(this.state.currentChoice);
         }
     }
     _confirmClass = () => {
         // "Warns" everyone in the room this player is ready to play.
         // ### Need for implementation...
-        //alert(!this.state.alreadyChosen && this.state.currentChoice != null);
+        this.props.onConfirmClass(this.state.currentChoice);
     }
     _classAlreadyChosen = (classId) => {
         // makes search on players class to see if there is a repeat. returns TRUE if a repeat is found.
@@ -54,7 +54,7 @@ export default class ChooseClass extends Component {
         return (
             <SafeAreaView style={styles.screen}>
                 <View style={styles.textView}>
-                    <TextView text={CUR_CHOICE == null ? 'Escolha sua classe' : 'Você escolheu o ' + CUR_CLASSNAME}></TextView>
+                    <TextView gameStats={this.props.gameStats} screenStats={this.state}></TextView>
                 </View>
                 <View style={styles.listView}>
                     <FlatList 

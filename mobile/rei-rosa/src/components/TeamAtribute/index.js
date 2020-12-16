@@ -10,14 +10,7 @@ import {
 } from 'react-native';
 import { styles } from './styles'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { color } from './../../enums/color';
-import { icons } from './../../enums/icons';
-//import { PopupRunOutOf } from './../PopupRunOutOf/index';
-
-import { timeForEachUpdate } from './../../config/roomConfig' // the smaller this const is, the smoother the timer ticks
-import { PopupRunOutOf } from '../PopupRunOutOf';
-const time_smoothness = 1/0.125; // #1 make it get from last line -> updates every 0.125 sec
-
+import * as CONFIG from './../../config/config';
 export class TeamAtributes extends Component
 {
     constructor(props){
@@ -25,42 +18,28 @@ export class TeamAtributes extends Component
     }
     render()
     {
+        const GS=this.props.gameStats;
         return(
             <SafeAreaView style={styles.teamAtributes}>
-                <View style={styles.teamAtributeView}>
-                    <View style={styles.iconView}>
-                        <Icon 
-                            style={styles.icons} 
-                            name={icons.FOOD} 
-                            size={30} 
-                            color={color.FOOD}/>
-                    </View>
-                   <View style={styles.barView}>
-                        <TeamAtributeBar 
-                            style={styles.foodBar}
-                            time={600}
-                            icon={icons.FOOD}
-                            color={color.FOOD}
-                        ></TeamAtributeBar>
-                    </View>
-                </View>
-                <View style={styles.teamAtributeView}>
-                    <View style={styles.iconView}>
-                        <Icon 
-                            style={styles.icons} 
-                            name={icons.WATER} 
-                            size={30} 
-                            color={color.WATER} />
+                {CONFIG.TEAM_ATRIBUTES.map((att)=>{
+                    return(
+                        <View key={att['id']} style={styles.teamAtributeView}>
+                            <View style={styles.iconView}>
+                                <Icon 
+                                    style={styles.icons} 
+                                    name={att['icon']} 
+                                    size={30} 
+                                    color={att['color']}/>
+                            </View>
+                            <View style={styles.barView}>
+                                <TeamAtributeBar 
+                                    atribute = {att}
+                                    points = {GS[att['name']]}
+                                ></TeamAtributeBar>
+                            </View>
                         </View>
-                    <View style={styles.barView}>
-                        <TeamAtributeBar 
-                            style={styles.waterBar}
-                            time={600}
-                            icon={icons.WATER}
-                            color={color.WATER}
-                        ></TeamAtributeBar>
-                    </View>
-                </View>
+                    )
+                })}
             </SafeAreaView>
         );
     }
@@ -70,56 +49,33 @@ export class TeamAtributeBar extends Component
 {
     constructor(props){
         super(props);
-        const defaultTime = this.props.time * time_smoothness;
-        this.state = {
-            seconds: defaultTime
+    }
+    renderCells(atribute,points){
+        let cells = [];
+        for(let i=1;i<=atribute['points'];i++)
+        {
+            cells[i] = 
+                <View key={i} style={
+                    {flex:1/atribute['points'],
+                    borderRightWidth:1,
+                    borderColor: (i <= points) ? "#fff" : "#000",
+                    backgroundColor: i <= points ? atribute['color'] : "#000"}
+                }>
+                    <Text style={{textAlign:"center"}}>{i}</Text>
+                </View>
         }
-        this.setTimer = this.setTimer.bind(this);
+        return cells;
     }
     render()
-    {
+    {   
+        const atribute = this.props.atribute;
+        const points = this.props.points;
         return(
-            <View>
-                <View style={styles.teamAtributeBar}>
-                    <Text style={[
-                        this.props.style,
-                        {width:styles.teamAtributeBar.width * this.state.seconds / (this.props.time*time_smoothness)}
-                    ]}>
-                        {this.props.title} {this.state.seconds}
-                    </Text>
-                </View>
-
-                <PopupRunOutOf icon={this.props.icon} color={this.props.color} title={this.props.title} timeIsUp={this.state.seconds === 0} action={this.setTimer}>
-                </PopupRunOutOf>
-
+            <View style={[
+                styles.teamAtributeBar,
+            ]}>
+                {this.renderCells(atribute,points)}
             </View>
         );
-    }
-    setTimer(){
-        const defaultTime = this.props.time * time_smoothness;
-        this.setState({
-            seconds:defaultTime
-        })
-        this.myInterval = setInterval(() => {
-            const { seconds } = this.state // interesting syntax...
-            if (seconds > 0) {
-              this.setState(({ seconds }) => ({
-                seconds: seconds - 1
-              }))
-            }
-            if (seconds === 0) {
-                clearInterval(this.myInterval)
-            }
-          }, 1000/time_smoothness)
-    }
-    clearTimer(){
-        clearInterval(this.myInterval);
-    }
-    componentDidMount() {
-        const defaultTime = this.props.time * time_smoothness;
-        this.setTimer(defaultTime);
-    }
-    componentWillUnmount(){
-        this.clearTimer();
     }
 }

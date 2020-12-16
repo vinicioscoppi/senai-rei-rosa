@@ -4,5 +4,6 @@ export const screen = {
     ATRIBUTE_SCREEN: 3,
     ROULETTE: 4,
     CARD: 5,
-    END:6
+    RUN_OUT_OF:6,
+    END:7
 }

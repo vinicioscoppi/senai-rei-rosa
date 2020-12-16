@@ -15,6 +15,10 @@ export const icons = {
     CLASS_ARCHER: 'chevron-right',
     CLASS_INVENTOR: 'lightbulb-o',
     
-    VOTE_AGREE: VERSION == 1 ? "check" :'thumbs-up',
-    VOTE_DISAGREE: VERSION == 1 ? "close" : 'thumbs-down',
+    VOTE_AGREE: VERSION == 1 ? 'check' :'thumbs-up',
+    VOTE_DISAGREE: VERSION == 1 ? 'close' : 'thumbs-down',
+
+    BIOME_FOREST: 'tree',
+    BIOME_DESERT: VERSION == 1 ? 'sun-o' : 'sun',
+    BIOME_MOUNTAIN: 'snowflake-o',
 }

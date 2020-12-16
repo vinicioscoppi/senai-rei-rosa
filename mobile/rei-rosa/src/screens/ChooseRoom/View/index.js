@@ -13,10 +13,10 @@ export default class ChooseRoom extends Component
         return(
             <View style={styles.screen}>
                 <View style={styles.title}>
-                    <TextView text='Escolha a sua equipe'></TextView>
+                    <TextView gameStats={this.props.gameStats}></TextView>
                 </View>
                 <View style={styles.roomList}>
-                    <RoomList numberOfRooms={10}></RoomList>
+                    <RoomList updateGame={(u) => this.props.updateGame(u)} numberOfRooms={10}></RoomList>
                 </View>
             </View>
         );

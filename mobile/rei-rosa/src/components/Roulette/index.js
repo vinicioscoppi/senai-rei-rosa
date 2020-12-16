@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import {View, Animated, Text, TouchableWithoutFeedback, Button} from 'react-native';
 import { styles } from './styles';
 import { wheelSize } from './styles';
-import {spinDuration , turns, initialAngle} from './../../../config/rouletteConfig';
 import Svg, {Path} from 'react-native-svg'; 
-import {TextView} from './../../../components/TextView/index';
-import {ROULETTE_DATA} from './../../../config/config';
+import {TextView} from './../TextView/index';
+import {spinDuration , turns, initialAngle} from './../../config/rouletteConfig';
+import {ROULETTE_DATA} from './../../config/config';
 export default class Roulette extends Component {
   constructor(props) {
     super(props);
@@ -82,6 +82,7 @@ export default class Roulette extends Component {
       });
     } 
   }
+
   createSlices = () => {
     let slices = [];
 
@@ -119,48 +120,37 @@ export default class Roulette extends Component {
     const { items } = this.props;
     
     return (
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <View style={styles.title}>
-            <TextView screenStats={this.state} gameStats={this.props.gameStats}>
-            </TextView>
-          </View>
-        </View>
-        <View style={styles.main}>
-          <View style={styles.wheelContainer}>
-            <TriangleDown></TriangleDown>
-            <TouchableWithoutFeedback onPress={this.spin}>
-              
-              <Animated.View style={[styles.wheel,this.animationCSS]}>
-                
-                <Svg
-                height={wheelSize}
-                width={wheelSize}
-                viewBox="-1 -1 2 2"
-                style={{ transform: [{ rotate: 30 + initialAngle +"deg" }] }}
-                >
-                  {this.createSlices()}
-                  {items.map((item, index) => (
-                  <View style={[styles.wheelItem,this.getItemPosition(index)]} key={index}>
-                    <Text style={styles.wheelItemText}>{item}</Text>
-                  </View>
-                ))}
-                
-                </Svg>
-                
-                <Circle></Circle>
-                
-              </Animated.View>
-
-            </TouchableWithoutFeedback>
-            <Text style={styles.wheelMsg}>{this.state.showSelectedItem == true ? this.state.selectedItem : ""}</Text>
+        <View style={styles.wheelContainer}>
+        <TriangleDown/>
+        <TouchableWithoutFeedback onPress={this.spin}>
             
-          </View>
-        </View>
-        <View style={styles.footer}>          
-        </View>
-      </View>  
+            <Animated.View style={[styles.wheel,this.animationCSS]}>
+            
+            <Svg
+            height={wheelSize}
+            width={wheelSize}
+            viewBox="-1 -1 2 2"
+            style={[styles.svg,{ transform: [{ rotate: 30 + initialAngle +"deg" }] }]}
+            >
+                {this.createSlices()}
+                {items.map((item, index) => (
+                <View style={[styles.wheelItem,this.getItemPosition(index)]} key={index}>
+                <Text style={styles.wheelItemText}>{item}</Text>
+                </View>
+            ))}
+            
+            </Svg>
+            
+            
+            
+            </Animated.View>
 
+        </TouchableWithoutFeedback>
+        <Circle/>
+            <View style={styles.wheelMsgView}>
+                <Text style={styles.wheelMsg}>{this.state.showSelectedItem == true ? this.state.selectedItem : ""}</Text>
+            </View>
+        </View>
     );
   }
 }

@@ -24,8 +24,8 @@ export class IndividualAtributes extends Component
                     atribute="FORCA" 
                     colorEnabled={color.STRENGTH_ENABLED} 
                     colorDisabled={color.STRENGTH_DISABLED} 
-                    score={atributes.strenght}
-                    onScoreChange={(newScore) => updateAtributes({strenght:newScore})}>
+                    score={atributes.strength}
+                    onScoreChange={(newScore) => updateAtributes({strength:newScore})}>
                 </AtributeBar>
                 <AtributeBar key={2} 
                     atribute="CORAGEM" 
