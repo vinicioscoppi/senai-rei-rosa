@@ -1,0 +1,1 @@
+module.exports = (from, to) => Array.from(Array(to + 1), (_, i) => i + from);
